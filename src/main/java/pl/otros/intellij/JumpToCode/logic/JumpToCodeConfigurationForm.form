@@ -90,9 +90,11 @@
         </constraints>
         <properties>
           <font size="14" style="1"/>
-          <foreground awt-color="blue"/>
+          <foreground system-color="activeCaption"/>
+          <horizontalAlignment value="0"/>
+          <horizontalTextPosition value="4"/>
           <icon value="/logo32.png"/>
-          <text value="OtrosJumpToCode plugin settings"/>
+          <text value="OtrosJumpToCode plugin"/>
         </properties>
       </component>
       <scrollpane id="39ecb">
