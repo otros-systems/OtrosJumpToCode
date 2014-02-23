@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="pl.otros.intellij.JumpToCode.logic.JumpToCodeConfigurationForm">
+  <grid id="27dc6" binding="rootComponent" layout-manager="FormLayout">
+    <rowspec value="center:max(d;4px):noGrow"/>
+    <rowspec value="top:4dlu:noGrow"/>
+    <rowspec value="center:max(d;4px):noGrow"/>
+    <rowspec value="top:4dlu:noGrow"/>
+    <rowspec value="center:max(d;4px):noGrow"/>
+    <rowspec value="top:4dlu:noGrow"/>
+    <rowspec value="center:max(d;4px):noGrow"/>
+    <rowspec value="top:4dlu:noGrow"/>
+    <rowspec value="center:77px:noGrow"/>
+    <rowspec value="top:4dlu:noGrow"/>
+    <rowspec value="top:34px:noGrow"/>
+    <rowspec value="top:4dlu:noGrow"/>
+    <rowspec value="center:max(d;4px):noGrow"/>
+    <rowspec value="top:5dlu:noGrow"/>
+    <rowspec value="center:max(d;4px):noGrow"/>
+    <rowspec value="top:4dlu:noGrow"/>
+    <rowspec value="center:max(d;4px):noGrow"/>
+    <colspec value="fill:max(d;4px):noGrow"/>
+    <colspec value="left:4dlu:noGrow"/>
+    <colspec value="fill:286px:noGrow"/>
+    <constraints>
+      <xy x="20" y="20" width="790" height="2159"/>
+    </constraints>
+    <properties/>
+    <border type="none"/>
+    <children>
+      <component id="74d84" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+          <forms/>
+        </constraints>
+        <properties>
+          <labelFor value="2ec1d"/>
+          <text value="&amp;Hostname"/>
+        </properties>
+      </component>
+      <component id="c6181" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+          <forms/>
+        </constraints>
+        <properties>
+          <labelFor value="efba3"/>
+          <text value="&amp;Port"/>
+        </properties>
+      </component>
+      <component id="efba3" class="javax.swing.JTextField" binding="portField">
+        <constraints>
+          <grid row="4" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="631" height="20"/>
+          </grid>
+          <forms/>
+        </constraints>
+        <properties>
+          <toolTipText value="local port on which to listen"/>
+        </properties>
+      </component>
+      <component id="3e4cc" class="javax.swing.JCheckBox" binding="enabledCheckBox">
+        <constraints>
+          <grid row="6" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false">
+            <preferred-size width="631" height="22"/>
+          </grid>
+          <forms/>
+        </constraints>
+        <properties>
+          <text value="&amp;Enabled"/>
+          <toolTipText value="start/stop the listener"/>
+        </properties>
+      </component>
+      <component id="2ec1d" class="javax.swing.JTextField" binding="hostnameField">
+        <constraints>
+          <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="631" height="20"/>
+          </grid>
+          <forms/>
+        </constraints>
+        <properties>
+          <toolTipText value="local address on which to listen"/>
+        </properties>
+      </component>
+      <component id="530e" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false">
+            <preferred-size width="631" height="17"/>
+          </grid>
+          <forms/>
+        </constraints>
+        <properties>
+          <font size="14" style="1"/>
+          <foreground awt-color="blue"/>
+          <icon value="/logo32.png"/>
+          <text value="OtrosJumpToCode plugin settings"/>
+        </properties>
+      </component>
+      <scrollpane id="39ecb">
+        <constraints>
+          <grid row="8" column="2" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+          <forms/>
+        </constraints>
+        <properties/>
+        <border type="none"/>
+        <children>
+          <component id="864d4" class="javax.swing.JTextArea" default-binding="true">
+            <constraints/>
+            <properties>
+              <editable value="false"/>
+              <enabled value="true"/>
+              <lineWrap value="true"/>
+              <rows value="5"/>
+              <text value="The OtrosJumpToCode plugin will listen on the configured TCP port and accept commands from external programs to jump to a specific source location. This plugin is based on JumpToCode plugin" noi18n="true"/>
+              <wrapStyleWord value="true"/>
+            </properties>
+          </component>
+        </children>
+      </scrollpane>
+      <component id="d849d" class="javax.swing.JButton" binding="openOtrosLogViewerPageButton" default-binding="true">
+        <constraints>
+          <grid row="10" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <forms/>
+        </constraints>
+        <properties>
+          <hideActionText value="false"/>
+          <horizontalAlignment value="2"/>
+          <icon value="/logo16.png"/>
+          <text value="Open OtrosLogViewer page"/>
+          <toolTipText value="Open OtrosLogViewer page"/>
+        </properties>
+        <clientProperties>
+          <hideActionText class="java.lang.Boolean" value="false"/>
+        </clientProperties>
+      </component>
+      <component id="f3acd" class="javax.swing.JButton" binding="openWikiPageButton" default-binding="true">
+        <constraints>
+          <grid row="12" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <forms/>
+        </constraints>
+        <properties>
+          <horizontalAlignment value="2"/>
+          <icon value="/logo16.png"/>
+          <text value="Open wiki page"/>
+        </properties>
+      </component>
+    </children>
+  </grid>
+  <inspectionSuppressions>
+    <suppress inspection="NoLabelFor" id="864d4"/>
+  </inspectionSuppressions>
+</form>

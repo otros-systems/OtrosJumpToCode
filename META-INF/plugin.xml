@@ -1,0 +1,45 @@
+<idea-plugin version="2">
+  <id>pl.otros.intellij.JumpToCode</id>
+  <name>OtrosJumpToCode</name>
+  <version>1.0</version>
+  <vendor email="otros.systems+jumpToCode@gmail.com" url="http://code.google.com/p/otroslogviewer/">Otros Systems</vendor>
+
+  <description><![CDATA[
+      Allows other programs to make IDEA jump to specified java code<br>
+      Plugin is made as add on to OtrosLogViewer<br>
+      Plugin is based on JumpToCode plugin.
+      ]]></description>
+
+  <change-notes><![CDATA[
+      <B>Version 1.0</B>
+      Get JumpToCode sources and repackage<br>
+      Add operation to get content
+      ]]>
+  </change-notes>
+
+  <!-- please see http://confluence.jetbrains.net/display/IDEADEV/Build+Number+Ranges for description -->
+  <idea-version since-build="107.105"/>
+
+  <!-- please see http://confluence.jetbrains.net/display/IDEADEV/Plugin+Compatibility+with+IntelliJ+Platform+Products
+       on how to target different products -->
+  <!-- uncomment to enable plugin in all products
+  <depends>com.intellij.modules.lang</depends>
+  -->
+
+  <application-components>
+    <!-- Add your application components here -->
+      <component><implementation-class>pl.otros.intellij.JumpToCode.logic.OtrosJumpToCodeApplicationComponent</implementation-class></component>
+  </application-components>
+
+  <project-components>
+    <!-- Add your project components here -->
+  </project-components>
+
+  <actions>
+    <!-- Add your actions here -->
+  </actions>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <!-- Add your extensions here -->
+  </extensions>
+</idea-plugin>
