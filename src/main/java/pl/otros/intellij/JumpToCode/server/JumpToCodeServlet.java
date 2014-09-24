@@ -16,6 +16,7 @@
 
 package pl.otros.intellij.JumpToCode.server;
 
+import org.apache.commons.lang.StringUtils;
 import pl.otros.intellij.JumpToCode.logic.FileCopyUtils;
 import pl.otros.intellij.JumpToCode.logic.FileUtils;
 import pl.otros.intellij.JumpToCode.model.SourceLocation;
@@ -25,6 +26,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.InputStream;
 
 /**
  */
@@ -38,18 +40,15 @@ public class JumpToCodeServlet extends HttpServlet {
       form(response);
       return;
     }
-    switch (operation) {
-      case "jump":
-        jump(request, response, false);
-        return;
-      case "test":
-        jump(request, response, true);
-        return;
-      case "content":
-        content(request, response);
-        return;
+    if (StringUtils.equalsIgnoreCase("jump", operation)) {
+      jump(request, response, false);
+    } else if (StringUtils.equalsIgnoreCase("test", operation)) {
+      jump(request, response, true);
+    } else if (StringUtils.equalsIgnoreCase("content", operation)) {
+      content(request, response);
+    } else {
+      error(response, "Unexpected operation");
     }
-    error(response, "Unexpected operation");
   }
 
   private void content(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -132,9 +131,8 @@ public class JumpToCodeServlet extends HttpServlet {
   }
 
   private void form(HttpServletResponse response) throws IOException {
-    FileCopyUtils.copy(
-        getClass().getResourceAsStream("form.html"),
-        response.getOutputStream());
+    final InputStream formIs = getClass().getClassLoader().getResourceAsStream("form.html");
+    FileCopyUtils.copy(formIs, response.getOutputStream());
     response.setStatus(HttpServletResponse.SC_OK);
   }
 

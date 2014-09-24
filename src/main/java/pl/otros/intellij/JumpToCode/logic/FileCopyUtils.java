@@ -17,6 +17,7 @@
 package pl.otros.intellij.JumpToCode.logic;
 
 import org.apache.log4j.Logger;
+import pl.otros.intellij.JumpToCode.IOUtils;
 
 import java.io.*;
 
@@ -57,18 +58,8 @@ public abstract class FileCopyUtils {
 			return byteCount;
 		}
 		finally {
-			try {
-				in.close();
-			}
-			catch (IOException ex) {
-				logger.warn("Could not close InputStream", ex);
-			}
-			try {
-				out.close();
-			}
-			catch (IOException ex) {
-				logger.warn("Could not close OutputStream", ex);
-			}
+				IOUtils.closeQuietly(in);
+				IOUtils.closeQuietly(out);
 		}
 	}
 

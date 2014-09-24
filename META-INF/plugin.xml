@@ -1,7 +1,7 @@
 <idea-plugin version="2">
   <id>pl.otros.intellij.JumpToCode</id>
   <name>OtrosJumpToCode</name>
-  <version>1.0</version>
+  <version>1.1</version>
   <vendor email="otros.systems+jumpToCode@gmail.com" url="http://code.google.com/p/otroslogviewer/">Otros Systems</vendor>
 
   <description><![CDATA[
@@ -12,9 +12,14 @@
 
   <change-notes><![CDATA[
       <B>Version 1.0</B>
-      Get JumpToCode sources and repackage<br>
-      Add operation to get content
-      ]]>
+      Get JumpToCode sources and repackage<BR/>
+      Add operation to get content<BR/>
+      <BR/>
+      <B>Version 1.1</B>
+      Compiled with Java 1.6 (MacOS :))<BR/>
+      Changed selection color from yellow to "Search result"
+
+            ]]>
   </change-notes>
 
   <!-- please see http://confluence.jetbrains.net/display/IDEADEV/Build+Number+Ranges for description -->

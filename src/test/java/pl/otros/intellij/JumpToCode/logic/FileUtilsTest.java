@@ -16,7 +16,7 @@
 
 package pl.otros.intellij.JumpToCode.logic;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;

@@ -16,11 +16,12 @@
 
 package pl.otros.intellij.JumpToCode.logic;
 
-import com.intellij.ui.JBColor;
-import pl.otros.intellij.JumpToCode.model.SourceLocation;
 import com.intellij.ide.plugins.PluginManager;
 import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.editor.markup.EffectType;
+import com.intellij.openapi.editor.colors.EditorColors;
+import com.intellij.openapi.editor.colors.EditorColorsManager;
+import com.intellij.openapi.editor.colors.EditorColorsScheme;
+import com.intellij.openapi.editor.colors.TextAttributesKey;
 import com.intellij.openapi.editor.markup.HighlighterLayer;
 import com.intellij.openapi.editor.markup.RangeHighlighter;
 import com.intellij.openapi.editor.markup.TextAttributes;
@@ -34,9 +35,10 @@ import com.intellij.openapi.roots.ProjectFileIndex;
 import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.apache.log4j.Logger;
+import pl.otros.intellij.JumpToCode.IOUtils;
+import pl.otros.intellij.JumpToCode.model.SourceLocation;
 
 import javax.swing.*;
-import java.awt.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -60,7 +62,7 @@ public class FileUtils {
     return !findSourceFiles(location).isEmpty();
   }
 
-  //TODO
+
   public static String getContent(SourceLocation location) {
     List<SourceFile> files = findSourceFiles(location);
     final int lineNumber = location.getLineNumber() - 1;
@@ -80,7 +82,9 @@ public class FileUtils {
 
   static void readFileSelectedLines(int lineNumber, InputStream inputStream, StringBuilder stringBuilder) {
     int currentLine = 1;
-    try (BufferedReader bin = new BufferedReader(new InputStreamReader(inputStream))) {
+    BufferedReader bin = null;
+    try {
+      bin = new BufferedReader(new InputStreamReader(inputStream));
       String s;
       while ((s = bin.readLine()) != null) {
         if (currentLine > lineNumber - 3) {
@@ -93,6 +97,8 @@ public class FileUtils {
       }
     } catch (IOException e) {
       PluginManager.getLogger().error("Can't read source file", e);
+    } finally {
+      IOUtils.closeQuietly(bin);
     }
   }
 
@@ -148,8 +154,11 @@ public class FileUtils {
     public void run() {
       Editor editor = fileEditorManager.openTextEditor(ofd, true);
       if (editor != null) {
-        TextAttributes attributes = new TextAttributes(JBColor.BLUE, JBColor.YELLOW, JBColor.BLUE, EffectType.LINE_UNDERSCORE, Font.PLAIN);
+        final EditorColorsScheme globalScheme = EditorColorsManager.getInstance().getGlobalScheme();
+        final TextAttributesKey searchResultAttributes = EditorColors.SEARCH_RESULT_ATTRIBUTES;
+        final TextAttributes attributes = searchResultAttributes.getDefaultAttributes();
         RangeHighlighter highlighter = editor.getMarkupModel().addLineHighlighter(lineNumber, HighlighterLayer.ERROR, attributes);
+
         new Thread(new RemoveHighLighter(editor, highlighter)).start();
         ok = true;
       }
@@ -205,7 +214,7 @@ public class FileUtils {
   private static List<SourceFile> findSourceFiles(SourceLocation location) {
     ProjectManager projectManager = ProjectManager.getInstance();
     Project[] projects = projectManager.getOpenProjects();
-    List<SourceFile> matches = new ArrayList<>();
+    List<SourceFile> matches = new ArrayList<SourceFile>();
     for (Project project : projects) {
       ProjectRootManager prm = ProjectRootManager.getInstance(project);
       PackageIndex packageIndex = PackageIndex.getInstance(project);
