@@ -16,28 +16,27 @@
 
 package pl.otros.intellij.JumpToCode.server;
 
-import pl.otros.intellij.JumpToCode.logic.ServerConfig;
+import org.apache.log4j.Logger;
+import org.mortbay.jetty.Connector;
+import org.mortbay.jetty.Server;
+import org.mortbay.jetty.bio.SocketConnector;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
-import org.mortbay.jetty.Server;
-import org.mortbay.jetty.Connector;
-import org.mortbay.jetty.bio.SocketConnector;
-import org.apache.log4j.Logger;
+import pl.otros.intellij.JumpToCode.logic.ServerConfig;
 
 /**
  */
 public class HttpServer {
 
-  private final Logger logger = Logger.getLogger(this.getClass());
-  
   private static HttpServer instance = new HttpServer();
+  private final Logger logger = Logger.getLogger(this.getClass());
   private Server server;
+
+  private HttpServer() {
+  }
 
   public static HttpServer getInstance() {
     return instance;
-  }
-
-  private HttpServer() {
   }
 
   public boolean isActive() {
@@ -65,19 +64,19 @@ public class HttpServer {
   private void start(ServerConfig config) {
     logger.debug("starting HttpServer");
     server = new Server();
-    Connector connector=new SocketConnector();
+    Connector connector = new SocketConnector();
     connector.setPort(config.getPortNumber());
     connector.setHost(config.getHostName());
     server.setConnectors(new Connector[]{connector});
     Context root = new Context(server, "/", Context.NO_SESSIONS);
-    root.addServlet(new ServletHolder(new JumpToCodeServlet() ), "/*");
+    root.addServlet(new ServletHolder(new JumpToCodeServlet()), "/*");
     server.setStopAtShutdown(true);
     try {
       server.start();
       logger.info("started JumpToCode HTTP server at "
-        + config.getHostName()
-        + ":"
-        + config.getPortNumber());
+          + config.getHostName()
+          + ":"
+          + config.getPortNumber());
     } catch (Exception e) {
       logger.error("failed to start JumpToCode HTTP server", e);
     }

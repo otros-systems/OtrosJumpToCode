@@ -19,7 +19,7 @@ package pl.otros.intellij.JumpToCode.logic;
 /**
  */
 public interface ServerConfig {
-  
+
   String getHostName();
 
   int getPortNumber();

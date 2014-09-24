@@ -28,10 +28,14 @@ public class SourceLocation {
 
   private int lineNumber;
 
-  /** in which project to search (not yet used) */
+  /**
+   * in which project to search (not yet used)
+   */
   private String project;
 
-  /** in which module to search (not yet used) */  
+  /**
+   * in which module to search (not yet used)
+   */
   private String module;
 
   public SourceLocation(String packageName, String fileName, int lineNumber, String project, String module) {
@@ -44,6 +48,7 @@ public class SourceLocation {
 
   /**
    * construct a SourceLocation from a fully qualified class name (not yet used)
+   *
    * @param fullyQualifiedClassName fully qualified class name
    */
   public SourceLocation(String fullyQualifiedClassName) {
@@ -60,7 +65,7 @@ public class SourceLocation {
     }
     this.lineNumber = -1;
     this.project = "";
-    this.module = "";    
+    this.module = "";
   }
 
   public int getLineNumber() {

@@ -46,11 +46,20 @@ import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 /**
  */
 public class FileUtils {
   private final static Logger logger = Logger.getLogger(FileUtils.class);
+
+
+  private static final ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
+  private volatile static RemoveHighLighter removeHighLighter;
+  private volatile static ScheduledFuture<?> schedule;
 
   /**
    * find all matching locations in currently opened projects
@@ -139,75 +148,10 @@ public class FileUtils {
     }
   }
 
-  private static class CodeJumper implements Runnable {
-    private boolean ok = false;
-    private FileEditorManager fileEditorManager;
-    private OpenFileDescriptor ofd;
-    private int lineNumber;
-
-    private CodeJumper(FileEditorManager fileEditorManager, OpenFileDescriptor ofd, int lineNumber) {
-      this.fileEditorManager = fileEditorManager;
-      this.ofd = ofd;
-      this.lineNumber = lineNumber;
-    }
-
-    public void run() {
-      Editor editor = fileEditorManager.openTextEditor(ofd, true);
-      if (editor != null) {
-        final EditorColorsScheme globalScheme = EditorColorsManager.getInstance().getGlobalScheme();
-        final TextAttributesKey searchResultAttributes = EditorColors.SEARCH_RESULT_ATTRIBUTES;
-        final TextAttributes attributes = searchResultAttributes.getDefaultAttributes();
-        RangeHighlighter highlighter = editor.getMarkupModel().addLineHighlighter(lineNumber, HighlighterLayer.ERROR, attributes);
-
-        new Thread(new RemoveHighLighter(editor, highlighter)).start();
-        ok = true;
-      }
-    }
-  }
-
   private static void sleep(int millis) {
     try {
       Thread.sleep(millis);
     } catch (InterruptedException ignored) {
-    }
-  }
-
-  private static class RemoveHighLighter implements Runnable {
-    private Editor editor;
-    private RangeHighlighter highlighter;
-
-    private RemoveHighLighter(Editor editor, RangeHighlighter highlighter) {
-      this.editor = editor;
-      this.highlighter = highlighter;
-    }
-
-    public void run() {
-      sleep(3000);
-      invokeSwing(new Runnable() {
-        public void run() {
-          editor.getMarkupModel().removeHighlighter(highlighter);
-        }
-      }, false);
-    }
-  }
-
-  private static class SourceFile {
-    private Project project;
-    Module module;
-    VirtualFile virtualFile;
-
-    @Override
-    public String toString() {
-      String moduleName = (module != null) ? module.getName() : "null";
-      String projectName = (project != null) ? project.getName() : "null";
-      return String.format("project=[%s] module=[%s] path=[%s}",
-          projectName, moduleName, virtualFile.getPath());
-    }
-
-    private SourceFile(Project project, Module module, VirtualFile virtualFile) {
-      this.project = project;
-      this.module = module;
-      this.virtualFile = virtualFile;
     }
   }
 
@@ -229,5 +173,76 @@ public class FileUtils {
       }
     }
     return matches;
+  }
+
+  private static class CodeJumper implements Runnable {
+    private boolean ok = false;
+    private FileEditorManager fileEditorManager;
+    private OpenFileDescriptor ofd;
+    private int lineNumber;
+
+
+    private CodeJumper(FileEditorManager fileEditorManager, OpenFileDescriptor ofd, int lineNumber) {
+      this.fileEditorManager = fileEditorManager;
+      this.ofd = ofd;
+      this.lineNumber = lineNumber;
+    }
+
+    public void run() {
+      Editor editor = fileEditorManager.openTextEditor(ofd, true);
+      if (editor != null) {
+        final EditorColorsScheme globalScheme = EditorColorsManager.getInstance().getGlobalScheme();
+        final TextAttributesKey searchResultAttributes = EditorColors.SEARCH_RESULT_ATTRIBUTES;
+        final TextAttributes attributes = searchResultAttributes.getDefaultAttributes();
+        RangeHighlighter highlighter = editor.getMarkupModel().addLineHighlighter(lineNumber, HighlighterLayer.ERROR, attributes);
+
+        if (schedule != null) {
+          schedule.cancel(true);
+          invokeSwing(removeHighLighter, false);
+        }
+        removeHighLighter = new RemoveHighLighter(editor, highlighter);
+        schedule = scheduledExecutorService.schedule(removeHighLighter, 5, TimeUnit.SECONDS);
+        ok = true;
+      }
+    }
+  }
+
+  private static class RemoveHighLighter implements Runnable {
+    private Editor editor;
+    private RangeHighlighter highlighter;
+
+    private RemoveHighLighter(Editor editor, RangeHighlighter highlighter) {
+      this.editor = editor;
+      this.highlighter = highlighter;
+    }
+
+    public void run() {
+      removeHighLighter = null;
+      invokeSwing(new Runnable() {
+        public void run() {
+          editor.getMarkupModel().removeHighlighter(highlighter);
+        }
+      }, false);
+    }
+  }
+
+  private static class SourceFile {
+    Module module;
+    VirtualFile virtualFile;
+    private Project project;
+
+    private SourceFile(Project project, Module module, VirtualFile virtualFile) {
+      this.project = project;
+      this.module = module;
+      this.virtualFile = virtualFile;
+    }
+
+    @Override
+    public String toString() {
+      String moduleName = (module != null) ? module.getName() : "null";
+      String projectName = (project != null) ? project.getName() : "null";
+      return String.format("project=[%s] module=[%s] path=[%s}",
+          projectName, moduleName, virtualFile.getPath());
+    }
   }
 }

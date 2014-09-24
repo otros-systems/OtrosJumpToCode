@@ -19,13 +19,17 @@ package pl.otros.intellij.JumpToCode.logic;
 /**
  */
 public class Config implements ServerConfig {
-  
+
   private String hostName = "127.0.0.1";
   private int port = 5987;
   private boolean enabled = true;
 
   public String getHostName() {
     return hostName;
+  }
+
+  public void setHostName(String hostName) {
+    this.hostName = hostName;
   }
 
   public int getPortNumber() {
@@ -36,12 +40,12 @@ public class Config implements ServerConfig {
     return enabled;
   }
 
-  public String getPort() {
-    return String.valueOf(port);
+  public void setEnabled(boolean enabled) {
+    this.enabled = enabled;
   }
 
-  public void setHostName(String hostName) {
-    this.hostName = hostName;
+  public String getPort() {
+    return String.valueOf(port);
   }
 
   public void setPort(String port) {
@@ -51,9 +55,5 @@ public class Config implements ServerConfig {
       pl.otros.intellij.JumpToCode.logic.OtrosJumpToCodeApplicationComponent.LOGGER.info("user entered invalid port number: " + port);
       // TODO: show error dialog
     }
-  }
-
-  public void setEnabled(boolean enabled) {
-    this.enabled = enabled;
   }
 }

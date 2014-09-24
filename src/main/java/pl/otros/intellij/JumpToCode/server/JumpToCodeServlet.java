@@ -31,6 +31,19 @@ import java.io.InputStream;
 /**
  */
 public class JumpToCodeServlet extends HttpServlet {
+  private static String getParameter(HttpServletRequest request, String shortName, String longName) {
+    String value = request.getParameter(longName);
+    if (value == null) {
+      value = request.getParameter(shortName);
+    }
+    return value;
+  }
+
+  private static String getParameter(HttpServletRequest request, String shortName, String longName, String defaultValue) {
+    String value = getParameter(request, shortName, longName);
+    return (value != null) ? value : defaultValue;
+  }
+
   protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     response.setContentType("text/html");
     response.addHeader("ide", "idea");
@@ -78,19 +91,6 @@ public class JumpToCodeServlet extends HttpServlet {
     } else {
       response.setStatus(HttpServletResponse.SC_NOT_FOUND);
     }
-  }
-
-  private static String getParameter(HttpServletRequest request, String shortName, String longName) {
-    String value = request.getParameter(longName);
-    if (value == null) {
-      value = request.getParameter(shortName);
-    }
-    return value;
-  }
-
-  private static String getParameter(HttpServletRequest request, String shortName, String longName, String defaultValue) {
-    String value = getParameter(request, shortName, longName);
-    return (value != null) ? value : defaultValue;
   }
 
   private void jump(HttpServletRequest request, HttpServletResponse response, boolean test) throws IOException {
