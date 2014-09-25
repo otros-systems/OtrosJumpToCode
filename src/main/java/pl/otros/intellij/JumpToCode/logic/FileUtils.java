@@ -19,8 +19,6 @@ package pl.otros.intellij.JumpToCode.logic;
 import com.intellij.ide.plugins.PluginManager;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.colors.EditorColors;
-import com.intellij.openapi.editor.colors.EditorColorsManager;
-import com.intellij.openapi.editor.colors.EditorColorsScheme;
 import com.intellij.openapi.editor.colors.TextAttributesKey;
 import com.intellij.openapi.editor.markup.HighlighterLayer;
 import com.intellij.openapi.editor.markup.RangeHighlighter;
@@ -48,7 +46,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -58,8 +55,6 @@ public class FileUtils {
 
 
   private static final ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
-  private volatile static RemoveHighLighter removeHighLighter;
-  private volatile static ScheduledFuture<?> schedule;
 
   /**
    * find all matching locations in currently opened projects
@@ -148,12 +143,6 @@ public class FileUtils {
     }
   }
 
-  private static void sleep(int millis) {
-    try {
-      Thread.sleep(millis);
-    } catch (InterruptedException ignored) {
-    }
-  }
 
   private static List<SourceFile> findSourceFiles(SourceLocation location) {
     ProjectManager projectManager = ProjectManager.getInstance();
@@ -190,18 +179,11 @@ public class FileUtils {
 
     public void run() {
       Editor editor = fileEditorManager.openTextEditor(ofd, true);
-      if (editor != null) {
-        final EditorColorsScheme globalScheme = EditorColorsManager.getInstance().getGlobalScheme();
+      if (editor != null && lineNumber>=0) {
         final TextAttributesKey searchResultAttributes = EditorColors.SEARCH_RESULT_ATTRIBUTES;
         final TextAttributes attributes = searchResultAttributes.getDefaultAttributes();
         RangeHighlighter highlighter = editor.getMarkupModel().addLineHighlighter(lineNumber, HighlighterLayer.ERROR, attributes);
-
-        if (schedule != null) {
-          schedule.cancel(true);
-          invokeSwing(removeHighLighter, false);
-        }
-        removeHighLighter = new RemoveHighLighter(editor, highlighter);
-        schedule = scheduledExecutorService.schedule(removeHighLighter, 5, TimeUnit.SECONDS);
+        scheduledExecutorService.schedule(new RemoveHighLighter(editor, highlighter), 5, TimeUnit.SECONDS);
         ok = true;
       }
     }
@@ -217,7 +199,6 @@ public class FileUtils {
     }
 
     public void run() {
-      removeHighLighter = null;
       invokeSwing(new Runnable() {
         public void run() {
           editor.getMarkupModel().removeHighlighter(highlighter);
