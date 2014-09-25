@@ -1,12 +1,12 @@
 <idea-plugin version="2">
   <id>pl.otros.intellij.JumpToCode</id>
   <name>OtrosJumpToCode</name>
-  <version>1.1</version>
+  <version>1.2</version>
   <vendor email="otros.systems+jumpToCode@gmail.com" url="http://code.google.com/p/otroslogviewer/">Otros Systems</vendor>
 
   <description><![CDATA[
-      Allows other programs to make IDEA jump to specified java code<br>
-      Plugin is made as add on to OtrosLogViewer<br>
+      Allows other programs to make IDEA jump to specified java code<br/>
+      Plugin is made as add on to OtrosLogViewer<br/>
       Plugin is based on JumpToCode plugin.
       ]]></description>
 
@@ -17,8 +17,10 @@
       <BR/>
       <B>Version 1.1</B>
       Compiled with Java 1.6 (MacOS :))<BR/>
-      Changed selection color from yellow to "Search result"
-
+      Changed selection color from yellow to "Search result"</BR>
+      <BR/>
+      <B>Version 1.2</B>
+      Improve threading </BR>
             ]]>
   </change-notes>
 
