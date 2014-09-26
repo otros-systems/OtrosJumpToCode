@@ -34,7 +34,7 @@ import javax.swing.*;
 
 @State(
     name = "OtrosJumpToCodeApplicationComponent",
-    storages = {@Storage(id = "OtrosJumpToCode", file = "$OPTIONS$/OtrosJumpToCode.xml")}
+    storages = {@Storage(id = "OtrosJumpToCode", file = StoragePathMacros.APP_CONFIG + "/OtrosJumpToCode.xml")}
 )
 public class OtrosJumpToCodeApplicationComponent implements ApplicationComponent, Configurable,
     PersistentStateComponent<Config> {
