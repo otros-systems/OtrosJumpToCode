@@ -14,6 +14,12 @@
     <rowspec value="top:34px:noGrow"/>
     <rowspec value="top:4dlu:noGrow"/>
     <rowspec value="center:max(d;4px):noGrow"/>
+    <rowspec value="top:3dlu:noGrow"/>
+    <rowspec value="center:max(d;4px):noGrow"/>
+    <rowspec value="top:3dlu:noGrow"/>
+    <rowspec value="center:max(d;4px):noGrow"/>
+    <rowspec value="top:3dlu:noGrow"/>
+    <rowspec value="center:max(d;4px):noGrow"/>
     <rowspec value="top:5dlu:noGrow"/>
     <rowspec value="center:max(d;4px):noGrow"/>
     <rowspec value="top:4dlu:noGrow"/>
@@ -143,6 +149,42 @@
           <horizontalAlignment value="2"/>
           <icon value="/logo16.png"/>
           <text value="Open wiki page"/>
+        </properties>
+      </component>
+      <component id="68af6" class="javax.swing.JTextArea" binding="jumpCount">
+        <constraints>
+          <grid row="14" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+          <forms top="5" left="5" bottom="5" right="5"/>
+        </constraints>
+        <properties>
+          <columns value="30"/>
+          <editable value="false"/>
+          <lineWrap value="true"/>
+          <rows value="3"/>
+          <text value="."/>
+          <wrapStyleWord value="false"/>
+        </properties>
+      </component>
+      <component id="7b61f" class="javax.swing.JButton" binding="donateWithPaypal">
+        <constraints>
+          <grid row="16" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <forms/>
+        </constraints>
+        <properties>
+          <horizontalAlignment value="2"/>
+          <horizontalTextPosition value="2"/>
+          <text value="Donate with PayPal"/>
+        </properties>
+      </component>
+      <component id="8cb58" class="javax.swing.JButton" binding="donateWithBitCoinButton" default-binding="true">
+        <constraints>
+          <grid row="18" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <forms/>
+        </constraints>
+        <properties>
+          <horizontalAlignment value="2"/>
+          <horizontalTextPosition value="2"/>
+          <text value="Donate with BitCoin"/>
         </properties>
       </component>
     </children>

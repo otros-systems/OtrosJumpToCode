@@ -16,6 +16,9 @@
 
 package pl.otros.intellij.JumpToCode.logic;
 
+import pl.otros.intellij.JumpToCode.Properties;
+import pl.otros.intellij.JumpToCode.gui.DonateNotificationProvider;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -26,61 +29,69 @@ import java.net.URI;
 /**
  */
 public class JumpToCodeConfigurationForm {
-  private JTextField hostnameField;
-  private JPanel rootComponent;
-  private JTextField portField;
-  private JCheckBox enabledCheckBox;
-  private JButton openOtrosLogViewerPageButton;
-  private JButton openWikiPageButton;
+    private JTextField hostnameField;
+    private JPanel rootComponent;
+    private JTextField portField;
+    private JCheckBox enabledCheckBox;
+    private JButton openOtrosLogViewerPageButton;
+    private JButton openWikiPageButton;
+    private JTextArea jumpCount;
+    private JButton donateWithBitCoinButton;
+    private JButton donateWithPaypal;
 
-  public JumpToCodeConfigurationForm() {
-    openOtrosLogViewerPageButton.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        try {
-          Desktop.getDesktop().browse(URI.create("http://code.google.com/p/otroslogviewer/"));
-        } catch (IOException e1) {
-          e1.printStackTrace();
+    public JumpToCodeConfigurationForm() {
+        openOtrosLogViewerPageButton.addActionListener(new OpenBrowser("http://code.google.com/p/otroslogviewer/"));
+        openWikiPageButton.addActionListener(new OpenBrowser("http://code.google.com/p/otroslogviewer/wiki/JumpToCode"));
+        donateWithPaypal.addActionListener(new OpenBrowser(DonateNotificationProvider.DONATION_URL));
+        donateWithBitCoinButton.addActionListener(new OpenBrowser("https://code.google.com/p/otroslogviewer/wiki/DonateAndDonors"));
+    }
+
+    // Method returns the root component of the form
+    public JComponent getRootComponent() {
+        return rootComponent;
+    }
+
+    public void setData(Config data) {
+        portField.setText(data.getPort());
+        enabledCheckBox.setSelected(data.isEnabled());
+        hostnameField.setText(data.getHostName());
+        jumpCount.setText(String.format("You have performed %d jumps from OtrosLogViewer", Properties.getJumpsCount()));
+    }
+
+    public void getData(Config data) {
+        data.setPort(portField.getText());
+        data.setEnabled(enabledCheckBox.isSelected());
+        data.setHostName(hostnameField.getText());
+    }
+
+    @SuppressWarnings({"RedundantIfStatement"})
+    public boolean isModified(Config data) {
+        if (portField.getText() != null ? !portField.getText().equals(data.getPort()) : data.getPort() != null)
+            return true;
+        if (enabledCheckBox.isSelected() != data.isEnabled())
+            return true;
+        if (hostnameField.getText() != null ? !hostnameField.getText().equals(data.getHostName()) : data.getHostName() != null)
+            return true;
+        return false;
+    }
+
+
+    private static class OpenBrowser implements ActionListener {
+
+        private String url;
+
+        public OpenBrowser(String url) {
+            this.url = url;
         }
-      }
-    });
-    openWikiPageButton.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        try {
-          Desktop.getDesktop().browse(URI.create("http://code.google.com/p/otroslogviewer/wiki/JumpToCode"));
-        } catch (IOException e1) {
-          e1.printStackTrace();
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            try {
+                Desktop.getDesktop().browse(URI.create(url));
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
         }
-      }
-    });
-  }
+    }
 
-  // Method returns the root component of the form
-  public JComponent getRootComponent() {
-    return rootComponent;
-  }
-
-  public void setData(Config data) {
-    portField.setText(data.getPort());
-    enabledCheckBox.setSelected(data.isEnabled());
-    hostnameField.setText(data.getHostName());
-  }
-
-  public void getData(Config data) {
-    data.setPort(portField.getText());
-    data.setEnabled(enabledCheckBox.isSelected());
-    data.setHostName(hostnameField.getText());
-  }
-
-  @SuppressWarnings({"RedundantIfStatement"})
-  public boolean isModified(Config data) {
-    if (portField.getText() != null ? !portField.getText().equals(data.getPort()) : data.getPort() != null)
-      return true;
-    if (enabledCheckBox.isSelected() != data.isEnabled())
-      return true;
-    if (hostnameField.getText() != null ? !hostnameField.getText().equals(data.getHostName()) : data.getHostName() != null)
-      return true;
-    return false;
-  }
 }

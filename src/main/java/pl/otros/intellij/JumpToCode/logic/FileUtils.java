@@ -34,6 +34,7 @@ import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.apache.log4j.Logger;
 import pl.otros.intellij.JumpToCode.IOUtils;
+import pl.otros.intellij.JumpToCode.Properties;
 import pl.otros.intellij.JumpToCode.model.SourceLocation;
 
 import javax.swing.*;
@@ -122,6 +123,7 @@ public class FileUtils {
       CodeJumper codeJumper = new CodeJumper(fem, ofd, lineNumber);
       invokeSwing(codeJumper, true);
       if (codeJumper.ok) {
+        Properties.increaseJumpsCount();
         result = true;
         break;
       }
