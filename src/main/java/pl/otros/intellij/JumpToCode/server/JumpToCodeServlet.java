@@ -36,16 +36,23 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  */
 public class JumpToCodeServlet extends HttpServlet {
+
+  private static final String[] LOGGER_CLASSES = new String[]{
+      "org.slf4j.Logger"
+  };
+
   private static String getParameter(HttpServletRequest request, String shortName, String longName) {
     String value = request.getParameter(longName);
     if (value == null) {
       value = request.getParameter(shortName);
     }
-    return value;
+    return StringUtils.defaultString(value, "");
   }
 
   private static String getParameter(HttpServletRequest request, String shortName, String longName, String defaultValue) {
@@ -76,7 +83,7 @@ public class JumpToCodeServlet extends HttpServlet {
       } else {
         response.sendError(HttpServletResponse.SC_NOT_FOUND);
       }
-    } else if (StringUtils.endsWithIgnoreCase("new", operation)) {
+    } else if (StringUtils.equalsIgnoreCase("new", operation)) {
       try {
         newOperation(request, response);
       } catch (Exception e) {
@@ -94,14 +101,15 @@ public class JumpToCodeServlet extends HttpServlet {
     int lineNumber = parseInt(getParameter(request, "l", "lineNumber"), 0);
 //    String project = request.getParameter("project");
     String module = request.getParameter("module");
+    final String code = getParameter(request, "d", "code");
 
     ProjectManager projectManager = ProjectManager.getInstance();
     Project[] projects = projectManager.getOpenProjects();
-    final String fqcn = packageName + "." + className;
+    final String fqcn = StringUtils.isNotBlank(packageName) ? packageName + "." + className : className;
     final PrintWriter writer = response.getWriter();
-        //System.out;
+
     response.setContentType("text/plain");
-    writer.println("Response for " + fqcn);
+    writer.println("Response for " + fqcn + " with code " + code);
     for (final Project project : projects) {
 
 
@@ -116,27 +124,55 @@ public class JumpToCodeServlet extends HttpServlet {
             @Override
             public void visitReferenceElement(PsiJavaCodeReferenceElement reference) {
               super.visitReferenceElement(reference);
-              sb.append("\n");
               if (reference.getContext() instanceof PsiMethodCallExpression) {
+//                sb.append("\n");
                 PsiMethodCallExpression mc = (PsiMethodCallExpression) reference.getContext();
-                sb.append(mc.getMethodExpression().getReferenceName());
-                sb.append(mc.getFirstChild());
-                final String caller = ((PsiMethod) ((PsiReferenceExpression) mc.getFirstChild()).resolve()).getContainingClass().getQualifiedName();
-                sb.append("\nCaller is ").append(caller);
-                sb.append("\nText: ").append(mc.getText());
+//                sb.append(mc.getMethodExpression().getReferenceName());
+//                sb.append(mc.getFirstChild());
+                final String caller;
+                if (((PsiReferenceExpression) mc.getFirstChild()).resolve() != null) {
+                  final PsiMethod resolve = (PsiMethod) ((PsiReferenceExpression) mc.getFirstChild()).resolve();
+                  if (resolve != null) {
+                    final PsiClass containingClass = resolve.getContainingClass();
+                    if (containingClass != null) {
+                      caller = StringUtils.defaultString(containingClass.getQualifiedName(), "");
+                      if (caller.contains("Logger")) {
+                        sb.append("\nCaller is ").append(caller);
+                        sb.append("\nText: ").append(mc.getText());
+                        final List<PsiLiteralExpression> psiLiteralExpressions = literalExpression(mc.getArgumentList().getExpressions());
+                        for (PsiLiteralExpression psiLiteralExpression : psiLiteralExpressions) {
+                          sb.append("\n");
+                          String text = unwrap(psiLiteralExpression.getText());
+                          if (code.contains(text)) {
+                            final int textOffset = mc.getTextOffset();
+                            final int textLength = mc.getTextLength();
+                            sb.append("\nHIT!: ")
+                                .append(mc.getContainingFile()).append(" from ")
+                                .append(textOffset)
+                                .append(" with length ")
+                                .append(textLength)
+                                .append("\n");
+                            //TODO Jump to this location
+
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
               }
             }
           };
 
           javaRecursiveElementVisitor.visitElement(aClass);
-          sb.append("\nHave ").append(classesByName.length).append(" results for ").append(project.getName());
-          for (PsiClass psiClass : classesByName) {
-            final PsiField[] allFields = psiClass.getAllFields();
-            sb.append("\nHave ").append(allFields.length).append(" fields");
-            for (PsiField field : allFields) {
-              sb.append("\n").append(field.getName()).append(": ").append(field.getType().getCanonicalText());
-            }
-          }
+//          sb.append("\nHave ").append(classesByName.length).append(" results for ").append(project.getName());
+//          for (PsiClass psiClass : classesByName) {
+//            final PsiField[] allFields = psiClass.getAllFields();
+//            sb.append("\nHave ").append(allFields.length).append(" fields");
+//            for (PsiField field : allFields) {
+//              sb.append("\n").append(field.getName()).append(": ").append(field.getType().getCanonicalText());
+//            }
+//          }
           return sb.toString();
         }
       });
@@ -145,6 +181,27 @@ public class JumpToCodeServlet extends HttpServlet {
     }
 
 
+  }
+
+  private String unwrap(String text) {
+    if (text.startsWith("\"") && text.endsWith("\"") && text.length() > 2) {
+      return text.substring(1, text.length() - 1);
+    } else {
+      return text;
+    }
+  }
+
+  private List<PsiLiteralExpression> literalExpression(PsiExpression[] expressions) {
+    List<PsiLiteralExpression> r = new ArrayList<PsiLiteralExpression>();
+    for (PsiExpression e : expressions) {
+      if (e instanceof PsiLiteralExpression) {
+        r.add((PsiLiteralExpression) e);
+      } else if (e instanceof PsiBinaryExpression) {
+        PsiBinaryExpression be = (PsiBinaryExpression) e;
+        r.addAll(literalExpression(be.getOperands()));
+      }
+    }
+    return r;
   }
 
   private void content(HttpServletRequest request, HttpServletResponse response) throws IOException {
