@@ -23,6 +23,7 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.colors.EditorColors;
 import com.intellij.openapi.editor.colors.TextAttributesKey;
 import com.intellij.openapi.editor.markup.HighlighterLayer;
+import com.intellij.openapi.editor.markup.HighlighterTargetArea;
 import com.intellij.openapi.editor.markup.RangeHighlighter;
 import com.intellij.openapi.editor.markup.TextAttributes;
 import com.intellij.openapi.fileEditor.FileEditorManager;
@@ -61,8 +62,8 @@ public class FileUtils {
   private final static Logger logger = Logger.getLogger(FileUtils.class);
 
 
-  private static final ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
-  private static final int READ_LIMIT = 100*1000;
+  static final ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
+  private static final int READ_LIMIT = 100 * 1000;
 
   /**
    * find all matching locations in currently opened projects
@@ -80,7 +81,7 @@ public class FileUtils {
     final int lineNumber = location.getLineNumber() - 1;
     StringBuilder stringBuilder = new StringBuilder();
     for (SourceFile sourceFile : files) {
-      final OpenFileDescriptor ofd = new OpenFileDescriptor(sourceFile.project, sourceFile.virtualFile, lineNumber, 1);
+      final OpenFileDescriptor ofd = new OpenFileDescriptor(sourceFile.getProject(), sourceFile.getVirtualFile(), lineNumber, 1);
       try {
         stringBuilder.append("\nPath: ").append(ofd.getFile().getCanonicalPath()).append("\n");
         readFileSelectedLines(lineNumber, ofd.getFile().getInputStream(), stringBuilder);
@@ -125,11 +126,11 @@ public class FileUtils {
     boolean result = false;
     final int lineNumber = location.getLineNumber() - 1;
     for (SourceFile sourceFile : files) {
-      final FileEditorManager fem = FileEditorManager.getInstance(sourceFile.project);
-      final OpenFileDescriptor ofd = new OpenFileDescriptor(sourceFile.project, sourceFile.virtualFile, lineNumber, 1);
-      CodeJumper codeJumper = new CodeJumper(fem, ofd, lineNumber);
+      final FileEditorManager fem = FileEditorManager.getInstance(sourceFile.getProject());
+      final OpenFileDescriptor ofd = new OpenFileDescriptor(sourceFile.getProject(), sourceFile.getVirtualFile(), lineNumber, 1);
+      ToLineCodeJumper codeJumper = new ToLineCodeJumper(fem, ofd, lineNumber);
       invokeSwing(codeJumper, true);
-      if (codeJumper.ok) {
+      if (codeJumper.isOk()) {
         Properties.increaseJumpsCount();
         result = true;
         break;
@@ -138,7 +139,21 @@ public class FileUtils {
     return result;
   }
 
-  private static void invokeSwing(Runnable runnable, boolean wait) {
+  public static boolean jumpToLoccation(PsiFile psiFile, int offset, int length) {
+    final FileEditorManager fem = FileEditorManager.getInstance(psiFile.getProject());
+    final OpenFileDescriptor openFileDescriptor = new OpenFileDescriptor(psiFile.getProject(), psiFile.getVirtualFile(), offset);
+    final ToRangeCodeJumper codeJumper = new ToRangeCodeJumper(fem, openFileDescriptor, offset, length);
+    invokeSwing(codeJumper, true);
+    boolean result = false;
+    if (codeJumper.isOk()) {
+      Properties.increaseJumpsCount();
+      result = true;
+    }
+    return result;
+  }
+
+
+  static void invokeSwing(Runnable runnable, boolean wait) {
     try {
       if (wait) {
         SwingUtilities.invokeAndWait(runnable);
@@ -173,31 +188,6 @@ public class FileUtils {
     return matches;
   }
 
-  private static class CodeJumper implements Runnable {
-    private boolean ok = false;
-    private FileEditorManager fileEditorManager;
-    private OpenFileDescriptor ofd;
-    private int lineNumber;
-
-
-    private CodeJumper(FileEditorManager fileEditorManager, OpenFileDescriptor ofd, int lineNumber) {
-      this.fileEditorManager = fileEditorManager;
-      this.ofd = ofd;
-      this.lineNumber = lineNumber;
-    }
-
-    public void run() {
-      Editor editor = fileEditorManager.openTextEditor(ofd, true);
-      if (editor != null && lineNumber>=0) {
-        final TextAttributesKey searchResultAttributes = EditorColors.SEARCH_RESULT_ATTRIBUTES;
-        final TextAttributes attributes = searchResultAttributes.getDefaultAttributes();
-        RangeHighlighter highlighter = editor.getMarkupModel().addLineHighlighter(lineNumber, HighlighterLayer.ERROR, attributes);
-        scheduledExecutorService.schedule(new RemoveHighLighter(editor, highlighter), 5, TimeUnit.SECONDS);
-        ok = true;
-      }
-    }
-  }
-
 
   public static String findWholeClass(String clazz) {
     final PsiShortNamesCache instance = PsiShortNamesCache.getInstance(ProjectManager.getInstance().getDefaultProject());
@@ -208,9 +198,9 @@ public class FileUtils {
       final JavaPsiFacade psiFacade = JavaPsiFacade.getInstance(project);
       final PsiClass[] classes = psiFacade.findClasses(clazz, GlobalSearchScope.allScope(project));
       System.out.println("Found " + classes + " java classes");
-      for (PsiClass p:classes){
+      for (PsiClass p : classes) {
         //check if this is source
-        if (p.canNavigateToSource()){
+        if (p.canNavigateToSource()) {
           final PsiFile containingFile = p.getContainingFile();
 
 //          final OpenFileDescriptor openFileDescriptor = new OpenFileDescriptor(project, containingFile.getVirtualFile(), 1, 1);
@@ -226,14 +216,14 @@ public class FileUtils {
             JavaFileType file = (JavaFileType) fileType;
             final VirtualFile virtualFile = containingFile.getVirtualFile();
             return readVirtualFile(virtualFile);
-          } else if (fileType instanceof JavaClassFileType){
+          } else if (fileType instanceof JavaClassFileType) {
             JavaClassFileType javaClassFileType = (JavaClassFileType) fileType;
             //TODO get source of class?
             return "";
-          } else if (defaultExtension.equals("scala")){
+          } else if (defaultExtension.equals("scala")) {
             final VirtualFile virtualFile = containingFile.getVirtualFile();
             return readVirtualFile(virtualFile);
-          } else if (fileType.isBinary()){
+          } else if (fileType.isBinary()) {
             final PsiFile paretntContainingFile = p.getParent().getContainingFile();
             final FileType paretntContainingFileFileType = paretntContainingFile.getFileType();
 
@@ -261,32 +251,15 @@ public class FileUtils {
     return "";
   }
 
-  private static class RemoveHighLighter implements Runnable {
-    private Editor editor;
-    private RangeHighlighter highlighter;
 
-    private RemoveHighLighter(Editor editor, RangeHighlighter highlighter) {
-      this.editor = editor;
-      this.highlighter = highlighter;
-    }
-
-    public void run() {
-      invokeSwing(new Runnable() {
-        public void run() {
-          editor.getMarkupModel().removeHighlighter(highlighter);
-        }
-      }, false);
-    }
-  }
-
-  private static String readVirtualFile(VirtualFile virtualFile){
+  private static String readVirtualFile(VirtualFile virtualFile) {
     try {
       final InputStream inputStream = virtualFile.getInputStream();
       byte[] buff = new byte[1024];
       int read = 0;
       ByteArrayOutputStream bin = new ByteArrayOutputStream(inputStream.available());
-      while ((read = inputStream.read(buff))>0 && read < READ_LIMIT){
-        bin.write(buff,0,read);
+      while ((read = inputStream.read(buff)) > 0 && read < READ_LIMIT) {
+        bin.write(buff, 0, read);
       }
       return new String(bin.toByteArray(), Charset.forName("UTF-8"));
     } catch (IOException e) {
@@ -295,23 +268,117 @@ public class FileUtils {
     return "";
   }
 
-  private static class SourceFile {
-    Module module;
-    VirtualFile virtualFile;
-    private Project project;
 
-    private SourceFile(Project project, Module module, VirtualFile virtualFile) {
-      this.project = project;
-      this.module = module;
-      this.virtualFile = virtualFile;
-    }
+}
 
-    @Override
-    public String toString() {
-      String moduleName = (module != null) ? module.getName() : "null";
-      String projectName = (project != null) ? project.getName() : "null";
-      return String.format("project=[%s] module=[%s] path=[%s}",
-          projectName, moduleName, virtualFile.getPath());
+class SourceFile {
+  Module module;
+  VirtualFile virtualFile;
+  private Project project;
+
+  SourceFile(Project project, Module module, VirtualFile virtualFile) {
+    this.project = project;
+    this.module = module;
+    this.virtualFile = virtualFile;
+  }
+
+  @Override
+  public String toString() {
+    String moduleName = (module != null) ? module.getName() : "null";
+    String projectName = (project != null) ? project.getName() : "null";
+    return String.format("project=[%s] module=[%s] path=[%s}",
+        projectName, moduleName, virtualFile.getPath());
+  }
+
+  public Module getModule() {
+    return module;
+  }
+
+  public VirtualFile getVirtualFile() {
+    return virtualFile;
+  }
+
+  public Project getProject() {
+    return project;
+  }
+}
+
+class ToLineCodeJumper implements Runnable {
+  private boolean ok = false;
+  private FileEditorManager fileEditorManager;
+  private OpenFileDescriptor ofd;
+  private int lineNumber;
+
+
+  ToLineCodeJumper(FileEditorManager fileEditorManager, OpenFileDescriptor ofd, int lineNumber) {
+    this.fileEditorManager = fileEditorManager;
+    this.ofd = ofd;
+    this.lineNumber = lineNumber;
+  }
+
+  public void run() {
+    Editor editor = fileEditorManager.openTextEditor(ofd, true);
+    if (editor != null && lineNumber >= 0) {
+      final TextAttributesKey searchResultAttributes = EditorColors.SEARCH_RESULT_ATTRIBUTES;
+      final TextAttributes attributes = searchResultAttributes.getDefaultAttributes();
+      RangeHighlighter highlighter = editor.getMarkupModel().addLineHighlighter(lineNumber, HighlighterLayer.ERROR, attributes);
+      FileUtils.scheduledExecutorService.schedule(new RemoveHighLighter(editor, highlighter), 5, TimeUnit.SECONDS);
+      ok = true;
     }
+  }
+
+  public boolean isOk() {
+    return ok;
+  }
+}
+
+
+class ToRangeCodeJumper implements Runnable {
+  private boolean ok = false;
+  private FileEditorManager fileEditorManager;
+  private OpenFileDescriptor ofd;
+  private int offset;
+  private int length;
+
+
+  ToRangeCodeJumper(FileEditorManager fileEditorManager, OpenFileDescriptor ofd, int offset, int length) {
+    this.fileEditorManager = fileEditorManager;
+    this.ofd = ofd;
+    this.offset = offset;
+    this.length = length;
+  }
+
+  public void run() {
+    Editor editor = fileEditorManager.openTextEditor(ofd, true);
+    if (editor != null && offset >= 0) {
+      final TextAttributesKey searchResultAttributes = EditorColors.SEARCH_RESULT_ATTRIBUTES;
+      final TextAttributes attributes = searchResultAttributes.getDefaultAttributes();
+      RangeHighlighter highlighter = editor.getMarkupModel().addRangeHighlighter(offset, offset + length, HighlighterLayer.SELECTION, attributes, HighlighterTargetArea.LINES_IN_RANGE);
+
+      FileUtils.scheduledExecutorService.schedule(new RemoveHighLighter(editor, highlighter), 5, TimeUnit.SECONDS);
+      ok = true;
+    }
+  }
+
+  public boolean isOk() {
+    return ok;
+  }
+}
+
+class RemoveHighLighter implements Runnable {
+  private Editor editor;
+  private RangeHighlighter highlighter;
+
+  public RemoveHighLighter(Editor editor, RangeHighlighter highlighter) {
+    this.editor = editor;
+    this.highlighter = highlighter;
+  }
+
+  public void run() {
+    FileUtils.invokeSwing(new Runnable() {
+      public void run() {
+        editor.getMarkupModel().removeHighlighter(highlighter);
+      }
+    }, false);
   }
 }

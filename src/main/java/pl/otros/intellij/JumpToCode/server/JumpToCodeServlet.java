@@ -153,6 +153,8 @@ public class JumpToCodeServlet extends HttpServlet {
                                 .append(textLength)
                                 .append("\n");
                             //TODO Jump to this location
+                            final PsiFile containingFile = aClass.getContainingFile();
+                            FileUtils.jumpToLoccation(containingFile,textOffset,textLength);
 
                           }
                         }
