@@ -15,3 +15,8 @@ sleep 0.3;http http://localhost:15987/ o==jump p==pl.otros.logview.gui c==LogVie
 sleep 0.3;http http://localhost:15987/ o==jump p==pl.otros.logview.gui c==LogViewMainFrame m=="Can't initialize plugins "
 sleep 0.3;http http://localhost:15987/ o==jump p==pl.otros.logview.gui c==LogViewMainFrame m=="Can't update search highlight"
 sleep 0.3;http http://localhost:15987/ o==jump p==pl.otros.logview.gui c==LogViewMainFrame m=="Error: "
+
+sleep 0.3;http http://localhost:15987/ o==jump p==pl.otros.logview.gui f==LogViewMainFrame.java l==120
+sleep 0.3;http http://localhost:15987/ o==jump p==pl.otros.logview.gui f==LogViewMainFrame.java l==121
+sleep 0.3;http http://localhost:15987/ o==jump p==pl.otros.logview.gui f==LogViewMainFrame.java l==122
+sleep 0.3;http http://localhost:15987/ o==jump p==pl.otros.logview.gui f==LogViewMainFrame.java l==123

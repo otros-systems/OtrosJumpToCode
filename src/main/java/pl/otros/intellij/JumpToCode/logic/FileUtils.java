@@ -85,6 +85,8 @@ public class FileUtils {
       String fqcn = StringUtils.isEmpty(pkg.or("")) ? clazz.get() : pkg.get() + "." + clazz.get();
       String msg = message.get();
       jumpLocations.addAll(findByLogMessage(fqcn, msg));
+    } else if (file.isPresent() && line.isPresent()){
+      jumpLocations.add(new SourceLocation(pkg.or(""), file.get(), Integer.parseInt(line.get())));
     }
 
     return jumpLocations;

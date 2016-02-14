@@ -28,22 +28,11 @@ public class SourceLocation implements JumpLocation {
 
   private int lineNumber;
 
-  /**
-   * in which project to search (not yet used)
-   */
-  private String project;
 
-  /**
-   * in which module to search (not yet used)
-   */
-  private String module;
-
-  public SourceLocation(String packageName, String fileName, int lineNumber, String project, String module) {
+  public SourceLocation(String packageName, String fileName, int lineNumber) {
     this.packageName = packageName;
     this.fileName = fileName;
     this.lineNumber = lineNumber;
-    this.project = project;
-    this.module = module;
   }
 
   /**
@@ -64,8 +53,6 @@ public class SourceLocation implements JumpLocation {
       this.fileName = fileName + ".java";
     }
     this.lineNumber = -1;
-    this.project = "";
-    this.module = "";
   }
 
   public int getLineNumber() {
@@ -83,14 +70,6 @@ public class SourceLocation implements JumpLocation {
 
   public String getFileName() {
     return fileName;
-  }
-
-  public String getProject() {
-    return project;
-  }
-
-  public String getModule() {
-    return module;
   }
 
 }

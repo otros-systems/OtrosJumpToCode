@@ -17,8 +17,6 @@
 package pl.otros.intellij.JumpToCode.server;
 
 import com.google.common.base.Optional;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.project.ProjectManager;
 import org.apache.commons.lang.StringUtils;
 import pl.otros.intellij.JumpToCode.logic.FileCopyUtils;
 import pl.otros.intellij.JumpToCode.logic.FileUtils;
@@ -31,13 +29,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintWriter;
 import java.util.List;
 
 /**
  */
 public class JumpToCodeServlet extends HttpServlet {
-
 
   private static String getParameter(HttpServletRequest request, String shortName, String longName) {
     String value = request.getParameter(longName);
@@ -83,111 +79,20 @@ public class JumpToCodeServlet extends HttpServlet {
       } else {
         response.sendError(HttpServletResponse.SC_NOT_FOUND);
       }
-    } else if (StringUtils.equalsIgnoreCase("new", operation)) {
-      try {
-        newOperation(request, response);
-      } catch (Exception e) {
-        e.printStackTrace(response.getWriter());
-      }
-    } else {
+    }  else {
       error(response, "Unexpected operation");
     }
   }
 
-  private void newOperation(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    String packageName = getParameter(request, "p", "packageName");
-    final String fqcn = getParameter(request, "c", "className");
-    final String code = getParameter(request, "d", "code");
-
-    ProjectManager projectManager = ProjectManager.getInstance();
-    Project[] projects = projectManager.getOpenProjects();
-    final PrintWriter writer = response.getWriter();
-
-    response.setContentType("text/plain");
-    writer.println("Response for " + fqcn + " with code " + code);
-    for (final Project project : projects) {
-
-//
-//      final String result = ApplicationManager.getApplication().runReadAction(new Computable<String>() {
-//        public String compute() {
-//          final StringBuilder sb = new StringBuilder();
-//          final PsiClass aClass = JavaPsiFacadeEx.getInstanceEx(project).findClass(fqcn);
-//
-//          final JavaRecursiveElementVisitor javaRecursiveElementVisitor = new JavaRecursiveElementVisitor() {
-//            @Override
-//            public void visitReferenceElement(PsiJavaCodeReferenceElement reference) {
-//              super.visitReferenceElement(reference);
-//              if (reference.getContext() instanceof PsiMethodCallExpression) {
-//                PsiMethodCallExpression mc = (PsiMethodCallExpression) reference.getContext();
-//                final String caller;
-//                if (((PsiReferenceExpression) mc.getFirstChild()).resolve() != null) {
-//                  final PsiMethod resolve = (PsiMethod) ((PsiReferenceExpression) mc.getFirstChild()).resolve();
-//                  if (resolve != null) {
-//                    final PsiClass containingClass = resolve.getContainingClass();
-//                    if (containingClass != null) {
-//                      caller = StringUtils.defaultString(containingClass.getQualifiedName(), "");
-//                      if (caller.contains("Logger")) {
-//                        sb.append("\nCaller is ").append(caller);
-//                        sb.append("\nText: ").append(mc.getText());
-//                        final List<PsiLiteralExpression> psiLiteralExpressions = literalExpression(mc.getArgumentList().getExpressions());
-//                        for (PsiLiteralExpression psiLiteralExpression : psiLiteralExpressions) {
-//                          sb.append("\n");
-//                          String text = unwrap(psiLiteralExpression.getText());
-//                          if (code.contains(text)) {
-//                            final int textOffset = mc.getTextOffset();
-//                            final int textLength = mc.getTextLength();
-//                            sb.append("\nHIT!: ")
-//                                .append(mc.getContainingFile()).append(" from ")
-//                                .append(textOffset)
-//                                .append(" with length ")
-//                                .append(textLength)
-//                                .append("\n");
-//                            //TODO Jump to this location
-//                            final PsiFile containingFile = aClass.getContainingFile();
-//                            FileUtils.jumpToLocation(containingFile,textOffset,textLength);
-//
-//
-//                          }
-//                        }
-//                      }
-//                    }
-//                  }
-//                }
-//              }
-//            }
-//          };
-//
-//          javaRecursiveElementVisitor.visitElement(aClass);
-////          sb.append("\nHave ").append(classesByName.length).append(" results for ").append(project.getName());
-////          for (PsiClass psiClass : classesByName) {
-////            final PsiField[] allFields = psiClass.getAllFields();
-////            sb.append("\nHave ").append(allFields.length).append(" fields");
-////            for (PsiField field : allFields) {
-////              sb.append("\n").append(field.getName()).append(": ").append(field.getType().getCanonicalText());
-////            }
-////          }
-//          return sb.toString();
-//        }
-//      });
-//      writer.println(result);
-
-    }
-
-
-  }
-
-
-
   private void content(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    //TODO add finding by msg
     String packageName = getParameter(request, "p", "packageName");
     String fileName = getParameter(request, "f", "fileName");
     String className = getParameter(request, "c", "className");
     int lineNumber = parseInt(getParameter(request, "l", "lineNumber"), 0);
-    String project = request.getParameter("project");
-    String module = request.getParameter("module");
     SourceLocation location;
     if (packageName != null && fileName != null) {
-      location = new SourceLocation(packageName, fileName, lineNumber, project, module);
+      location = new SourceLocation(packageName, fileName, lineNumber);
     } else {
       if (className != null) {
         location = new SourceLocation(className);
@@ -208,16 +113,6 @@ public class JumpToCodeServlet extends HttpServlet {
   }
 
   private void jump(HttpServletRequest request, HttpServletResponse response, boolean test) throws IOException {
-//    String packageName = getParameter(request, "p", "packageName");
-//    String fileName = getParameter(request, "f", "fileName");
-//    String className = getParameter(request, "c", "className");
-//    int lineNumber = parseInt(getParameter(request, "l", "lineNumber"), 0);
-//    String project = request.getParameter("project");
-//    String module = request.getParameter("module");
-//    SourceLocation location;
-
-
-
     final Optional<String> pkg = getOptParameter(request, "p", "packageName");
     final Optional<String> clazz = getOptParameter(request, "c", "className");
     final Optional<String> file = getOptParameter(request, "f", "file");
