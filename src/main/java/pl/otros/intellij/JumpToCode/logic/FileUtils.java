@@ -16,34 +16,31 @@
 
 package pl.otros.intellij.JumpToCode.logic;
 
+import com.google.common.base.Optional;
 import com.intellij.ide.highlighter.JavaClassFileType;
 import com.intellij.ide.highlighter.JavaFileType;
 import com.intellij.ide.plugins.PluginManager;
-import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.editor.colors.EditorColors;
-import com.intellij.openapi.editor.colors.TextAttributesKey;
-import com.intellij.openapi.editor.markup.HighlighterLayer;
-import com.intellij.openapi.editor.markup.HighlighterTargetArea;
-import com.intellij.openapi.editor.markup.RangeHighlighter;
-import com.intellij.openapi.editor.markup.TextAttributes;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.fileTypes.FileType;
-import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.roots.PackageIndex;
 import com.intellij.openapi.roots.ProjectFileIndex;
 import com.intellij.openapi.roots.ProjectRootManager;
+import com.intellij.openapi.util.Computable;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.JavaPsiFacade;
-import com.intellij.psi.PsiClass;
-import com.intellij.psi.PsiFile;
+import com.intellij.psi.*;
+import com.intellij.psi.impl.JavaPsiFacadeEx;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.search.PsiShortNamesCache;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import pl.otros.intellij.JumpToCode.IOUtils;
 import pl.otros.intellij.JumpToCode.Properties;
+import pl.otros.intellij.JumpToCode.model.JumpLocation;
+import pl.otros.intellij.JumpToCode.model.PsiModelLocation;
 import pl.otros.intellij.JumpToCode.model.SourceLocation;
 
 import javax.swing.*;
@@ -54,7 +51,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 /**
  */
@@ -68,13 +64,83 @@ public class FileUtils {
   /**
    * find all matching locations in currently opened projects
    *
-   * @param location source location to search for
    * @return all matching locations (can be empty)
    */
-  public static boolean isReachable(SourceLocation location) {
-    return !findSourceFiles(location).isEmpty();
+  public static boolean isReachable(Optional<String> pkg,
+                                    Optional<String> clazz,
+                                    Optional<String> file,
+                                    Optional<String> line,
+                                    Optional<String> message) {
+    return !findLocation(pkg, clazz, file, line, message).isEmpty();
   }
 
+
+  public static List<JumpLocation> findLocation(Optional<String> pkg,
+                                                Optional<String> clazz,
+                                                Optional<String> file,
+                                                Optional<String> line,
+                                                Optional<String> message) {
+    final ArrayList<JumpLocation> jumpLocations = new ArrayList<JumpLocation>();
+    if (clazz.isPresent() && message.isPresent()) {
+      String fqcn = StringUtils.isEmpty(pkg.or("")) ? clazz.get() : pkg.get() + "." + clazz.get();
+      String msg = message.get();
+      jumpLocations.addAll(findByLogMessage(fqcn, msg));
+    }
+
+    return jumpLocations;
+  }
+
+  private static List<? extends JumpLocation> findByLogMessage(final String fqcn, final String code) {
+    final ArrayList<JumpLocation> jumpLocations = new ArrayList<JumpLocation>();
+
+    ProjectManager projectManager = ProjectManager.getInstance();
+    Project[] projects = projectManager.getOpenProjects();
+
+    for (final Project project : projects) {
+
+      final List<? extends JumpLocation> result = ApplicationManager.getApplication().runReadAction(new Computable<List<? extends JumpLocation>>() {
+        public List<? extends JumpLocation> compute() {
+          final PsiClass aClass = JavaPsiFacadeEx.getInstanceEx(project).findClass(fqcn);
+          final ArrayList<JumpLocation> result = new ArrayList<JumpLocation>();
+          final JavaRecursiveElementVisitor javaRecursiveElementVisitor = new JavaRecursiveElementVisitor() {
+            @Override
+            public void visitReferenceElement(PsiJavaCodeReferenceElement reference) {
+              super.visitReferenceElement(reference);
+              //find all method invocation
+              if (reference.getContext() instanceof PsiMethodCallExpression) {
+                PsiMethodCallExpression mc = (PsiMethodCallExpression) reference.getContext();
+                if (((PsiReferenceExpression) mc.getFirstChild()).resolve() != null) {
+                  final PsiMethod psiMethod = (PsiMethod) ((PsiReferenceExpression) mc.getFirstChild()).resolve();
+                  if (psiMethod != null) {
+                    final PsiClass containingClass = psiMethod.getContainingClass();
+                    if (containingClass != null) {
+                      String caller = Optional.fromNullable(containingClass.getQualifiedName()).or("");
+                      if (caller.contains("Logger")) {
+                        final List<PsiLiteralExpression> psiLiteralExpressions = literalExpression(mc.getArgumentList().getExpressions());
+                        for (PsiLiteralExpression psiLiteralExpression : psiLiteralExpressions) {
+                          String text = unwrap(psiLiteralExpression.getText());
+                          if (code.contains(text)) {
+                            final int textOffset = mc.getTextOffset();
+                            final int textLength = mc.getTextLength();
+                            final PsiFile containingFile = aClass.getContainingFile();
+                            result.add(new PsiModelLocation(containingFile, textOffset, textLength, mc));
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          };
+          javaRecursiveElementVisitor.visitElement(aClass);
+          return result;
+        }
+      });
+      jumpLocations.addAll(result);
+    }
+    return jumpLocations;
+  }
 
   public static String getContent(SourceLocation location) {
     List<SourceFile> files = findSourceFiles(location);
@@ -139,7 +205,7 @@ public class FileUtils {
     return result;
   }
 
-  public static boolean jumpToLoccation(PsiFile psiFile, int offset, int length) {
+  public static boolean jumpToLocation(PsiFile psiFile, int offset, int length) {
     final FileEditorManager fem = FileEditorManager.getInstance(psiFile.getProject());
     final OpenFileDescriptor openFileDescriptor = new OpenFileDescriptor(psiFile.getProject(), psiFile.getVirtualFile(), offset);
     final ToRangeCodeJumper codeJumper = new ToRangeCodeJumper(fem, openFileDescriptor, offset, length);
@@ -268,117 +334,39 @@ public class FileUtils {
     return "";
   }
 
-
-}
-
-class SourceFile {
-  Module module;
-  VirtualFile virtualFile;
-  private Project project;
-
-  SourceFile(Project project, Module module, VirtualFile virtualFile) {
-    this.project = project;
-    this.module = module;
-    this.virtualFile = virtualFile;
-  }
-
-  @Override
-  public String toString() {
-    String moduleName = (module != null) ? module.getName() : "null";
-    String projectName = (project != null) ? project.getName() : "null";
-    return String.format("project=[%s] module=[%s] path=[%s}",
-        projectName, moduleName, virtualFile.getPath());
-  }
-
-  public Module getModule() {
-    return module;
-  }
-
-  public VirtualFile getVirtualFile() {
-    return virtualFile;
-  }
-
-  public Project getProject() {
-    return project;
-  }
-}
-
-class ToLineCodeJumper implements Runnable {
-  private boolean ok = false;
-  private FileEditorManager fileEditorManager;
-  private OpenFileDescriptor ofd;
-  private int lineNumber;
-
-
-  ToLineCodeJumper(FileEditorManager fileEditorManager, OpenFileDescriptor ofd, int lineNumber) {
-    this.fileEditorManager = fileEditorManager;
-    this.ofd = ofd;
-    this.lineNumber = lineNumber;
-  }
-
-  public void run() {
-    Editor editor = fileEditorManager.openTextEditor(ofd, true);
-    if (editor != null && lineNumber >= 0) {
-      final TextAttributesKey searchResultAttributes = EditorColors.SEARCH_RESULT_ATTRIBUTES;
-      final TextAttributes attributes = searchResultAttributes.getDefaultAttributes();
-      RangeHighlighter highlighter = editor.getMarkupModel().addLineHighlighter(lineNumber, HighlighterLayer.ERROR, attributes);
-      FileUtils.scheduledExecutorService.schedule(new RemoveHighLighter(editor, highlighter), 5, TimeUnit.SECONDS);
-      ok = true;
+  private static String unwrap(String text) {
+    if (text.startsWith("\"") && text.endsWith("\"") && text.length() > 2) {
+      return text.substring(1, text.length() - 1);
+    } else {
+      return text;
     }
   }
 
-  public boolean isOk() {
-    return ok;
-  }
-}
-
-
-class ToRangeCodeJumper implements Runnable {
-  private boolean ok = false;
-  private FileEditorManager fileEditorManager;
-  private OpenFileDescriptor ofd;
-  private int offset;
-  private int length;
-
-
-  ToRangeCodeJumper(FileEditorManager fileEditorManager, OpenFileDescriptor ofd, int offset, int length) {
-    this.fileEditorManager = fileEditorManager;
-    this.ofd = ofd;
-    this.offset = offset;
-    this.length = length;
-  }
-
-  public void run() {
-    Editor editor = fileEditorManager.openTextEditor(ofd, true);
-    if (editor != null && offset >= 0) {
-      final TextAttributesKey searchResultAttributes = EditorColors.SEARCH_RESULT_ATTRIBUTES;
-      final TextAttributes attributes = searchResultAttributes.getDefaultAttributes();
-      RangeHighlighter highlighter = editor.getMarkupModel().addRangeHighlighter(offset, offset + length, HighlighterLayer.SELECTION, attributes, HighlighterTargetArea.LINES_IN_RANGE);
-
-      FileUtils.scheduledExecutorService.schedule(new RemoveHighLighter(editor, highlighter), 5, TimeUnit.SECONDS);
-      ok = true;
-    }
-  }
-
-  public boolean isOk() {
-    return ok;
-  }
-}
-
-class RemoveHighLighter implements Runnable {
-  private Editor editor;
-  private RangeHighlighter highlighter;
-
-  public RemoveHighLighter(Editor editor, RangeHighlighter highlighter) {
-    this.editor = editor;
-    this.highlighter = highlighter;
-  }
-
-  public void run() {
-    FileUtils.invokeSwing(new Runnable() {
-      public void run() {
-        editor.getMarkupModel().removeHighlighter(highlighter);
+  private static List<PsiLiteralExpression> literalExpression(PsiExpression[] expressions) {
+    List<PsiLiteralExpression> r = new ArrayList<PsiLiteralExpression>();
+    for (PsiExpression e : expressions) {
+      if (e instanceof PsiLiteralExpression) {
+        r.add((PsiLiteralExpression) e);
+      } else if (e instanceof PsiBinaryExpression) {
+        PsiBinaryExpression be = (PsiBinaryExpression) e;
+        r.addAll(literalExpression(be.getOperands()));
       }
-    }, false);
+    }
+    return r;
+  }
+
+  public static boolean jumpToLocation(List<JumpLocation> locations) {
+    for (JumpLocation location : locations) {
+      if (location instanceof PsiModelLocation) {
+        PsiModelLocation l = (PsiModelLocation) location;
+        return jumpToLocation(l.getContainingFile(), l.getTextOffset(), l.getTextLength());
+      } else if (location instanceof SourceLocation) {
+        SourceLocation sl = (SourceLocation) location;
+        return jumpToLocation(sl);
+      }
+    }
+    return false;
   }
 }
+
+

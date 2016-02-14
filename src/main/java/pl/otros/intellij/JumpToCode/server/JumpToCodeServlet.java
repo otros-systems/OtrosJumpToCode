@@ -16,17 +16,13 @@
 
 package pl.otros.intellij.JumpToCode.server;
 
-import com.intellij.openapi.application.ApplicationManager;
+import com.google.common.base.Optional;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
-import com.intellij.openapi.util.Computable;
-import com.intellij.psi.*;
-import com.intellij.psi.impl.JavaPsiFacadeEx;
-import com.intellij.psi.search.GlobalSearchScope;
-import com.intellij.psi.search.PsiShortNamesCache;
 import org.apache.commons.lang.StringUtils;
 import pl.otros.intellij.JumpToCode.logic.FileCopyUtils;
 import pl.otros.intellij.JumpToCode.logic.FileUtils;
+import pl.otros.intellij.JumpToCode.model.JumpLocation;
 import pl.otros.intellij.JumpToCode.model.SourceLocation;
 
 import javax.servlet.ServletException;
@@ -36,16 +32,12 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  */
 public class JumpToCodeServlet extends HttpServlet {
 
-  private static final String[] LOGGER_CLASSES = new String[]{
-      "org.slf4j.Logger"
-  };
 
   private static String getParameter(HttpServletRequest request, String shortName, String longName) {
     String value = request.getParameter(longName);
@@ -53,6 +45,14 @@ public class JumpToCodeServlet extends HttpServlet {
       value = request.getParameter(shortName);
     }
     return StringUtils.defaultString(value, "");
+  }
+
+  private static Optional<String> getOptParameter(HttpServletRequest request, String shortName, String longName) {
+    String value = request.getParameter(longName);
+    if (value == null) {
+      value = request.getParameter(shortName);
+    }
+    return Optional.fromNullable(value);
   }
 
   private static String getParameter(HttpServletRequest request, String shortName, String longName, String defaultValue) {
@@ -96,115 +96,87 @@ public class JumpToCodeServlet extends HttpServlet {
 
   private void newOperation(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String packageName = getParameter(request, "p", "packageName");
-    String fileName = getParameter(request, "f", "fileName");
-    final String className = getParameter(request, "c", "className");
-    int lineNumber = parseInt(getParameter(request, "l", "lineNumber"), 0);
-//    String project = request.getParameter("project");
-    String module = request.getParameter("module");
+    final String fqcn = getParameter(request, "c", "className");
     final String code = getParameter(request, "d", "code");
 
     ProjectManager projectManager = ProjectManager.getInstance();
     Project[] projects = projectManager.getOpenProjects();
-    final String fqcn = StringUtils.isNotBlank(packageName) ? packageName + "." + className : className;
     final PrintWriter writer = response.getWriter();
 
     response.setContentType("text/plain");
     writer.println("Response for " + fqcn + " with code " + code);
     for (final Project project : projects) {
 
-
-      final String result = ApplicationManager.getApplication().runReadAction(new Computable<String>() {
-        public String compute() {
-          final StringBuilder sb = new StringBuilder();
-          final GlobalSearchScope scope = GlobalSearchScope.allScope(project);
-          final PsiClass[] classesByName = PsiShortNamesCache.getInstance(project).getClassesByName(className, scope);
-          final PsiClass aClass = JavaPsiFacadeEx.getInstanceEx(project).findClass(fqcn);
-
-          final JavaRecursiveElementVisitor javaRecursiveElementVisitor = new JavaRecursiveElementVisitor() {
-            @Override
-            public void visitReferenceElement(PsiJavaCodeReferenceElement reference) {
-              super.visitReferenceElement(reference);
-              if (reference.getContext() instanceof PsiMethodCallExpression) {
-//                sb.append("\n");
-                PsiMethodCallExpression mc = (PsiMethodCallExpression) reference.getContext();
-//                sb.append(mc.getMethodExpression().getReferenceName());
-//                sb.append(mc.getFirstChild());
-                final String caller;
-                if (((PsiReferenceExpression) mc.getFirstChild()).resolve() != null) {
-                  final PsiMethod resolve = (PsiMethod) ((PsiReferenceExpression) mc.getFirstChild()).resolve();
-                  if (resolve != null) {
-                    final PsiClass containingClass = resolve.getContainingClass();
-                    if (containingClass != null) {
-                      caller = StringUtils.defaultString(containingClass.getQualifiedName(), "");
-                      if (caller.contains("Logger")) {
-                        sb.append("\nCaller is ").append(caller);
-                        sb.append("\nText: ").append(mc.getText());
-                        final List<PsiLiteralExpression> psiLiteralExpressions = literalExpression(mc.getArgumentList().getExpressions());
-                        for (PsiLiteralExpression psiLiteralExpression : psiLiteralExpressions) {
-                          sb.append("\n");
-                          String text = unwrap(psiLiteralExpression.getText());
-                          if (code.contains(text)) {
-                            final int textOffset = mc.getTextOffset();
-                            final int textLength = mc.getTextLength();
-                            sb.append("\nHIT!: ")
-                                .append(mc.getContainingFile()).append(" from ")
-                                .append(textOffset)
-                                .append(" with length ")
-                                .append(textLength)
-                                .append("\n");
-                            //TODO Jump to this location
-                            final PsiFile containingFile = aClass.getContainingFile();
-                            FileUtils.jumpToLoccation(containingFile,textOffset,textLength);
-
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          };
-
-          javaRecursiveElementVisitor.visitElement(aClass);
-//          sb.append("\nHave ").append(classesByName.length).append(" results for ").append(project.getName());
-//          for (PsiClass psiClass : classesByName) {
-//            final PsiField[] allFields = psiClass.getAllFields();
-//            sb.append("\nHave ").append(allFields.length).append(" fields");
-//            for (PsiField field : allFields) {
-//              sb.append("\n").append(field.getName()).append(": ").append(field.getType().getCanonicalText());
+//
+//      final String result = ApplicationManager.getApplication().runReadAction(new Computable<String>() {
+//        public String compute() {
+//          final StringBuilder sb = new StringBuilder();
+//          final PsiClass aClass = JavaPsiFacadeEx.getInstanceEx(project).findClass(fqcn);
+//
+//          final JavaRecursiveElementVisitor javaRecursiveElementVisitor = new JavaRecursiveElementVisitor() {
+//            @Override
+//            public void visitReferenceElement(PsiJavaCodeReferenceElement reference) {
+//              super.visitReferenceElement(reference);
+//              if (reference.getContext() instanceof PsiMethodCallExpression) {
+//                PsiMethodCallExpression mc = (PsiMethodCallExpression) reference.getContext();
+//                final String caller;
+//                if (((PsiReferenceExpression) mc.getFirstChild()).resolve() != null) {
+//                  final PsiMethod resolve = (PsiMethod) ((PsiReferenceExpression) mc.getFirstChild()).resolve();
+//                  if (resolve != null) {
+//                    final PsiClass containingClass = resolve.getContainingClass();
+//                    if (containingClass != null) {
+//                      caller = StringUtils.defaultString(containingClass.getQualifiedName(), "");
+//                      if (caller.contains("Logger")) {
+//                        sb.append("\nCaller is ").append(caller);
+//                        sb.append("\nText: ").append(mc.getText());
+//                        final List<PsiLiteralExpression> psiLiteralExpressions = literalExpression(mc.getArgumentList().getExpressions());
+//                        for (PsiLiteralExpression psiLiteralExpression : psiLiteralExpressions) {
+//                          sb.append("\n");
+//                          String text = unwrap(psiLiteralExpression.getText());
+//                          if (code.contains(text)) {
+//                            final int textOffset = mc.getTextOffset();
+//                            final int textLength = mc.getTextLength();
+//                            sb.append("\nHIT!: ")
+//                                .append(mc.getContainingFile()).append(" from ")
+//                                .append(textOffset)
+//                                .append(" with length ")
+//                                .append(textLength)
+//                                .append("\n");
+//                            //TODO Jump to this location
+//                            final PsiFile containingFile = aClass.getContainingFile();
+//                            FileUtils.jumpToLocation(containingFile,textOffset,textLength);
+//
+//
+//                          }
+//                        }
+//                      }
+//                    }
+//                  }
+//                }
+//              }
 //            }
-//          }
-          return sb.toString();
-        }
-      });
-      writer.println(result);
+//          };
+//
+//          javaRecursiveElementVisitor.visitElement(aClass);
+////          sb.append("\nHave ").append(classesByName.length).append(" results for ").append(project.getName());
+////          for (PsiClass psiClass : classesByName) {
+////            final PsiField[] allFields = psiClass.getAllFields();
+////            sb.append("\nHave ").append(allFields.length).append(" fields");
+////            for (PsiField field : allFields) {
+////              sb.append("\n").append(field.getName()).append(": ").append(field.getType().getCanonicalText());
+////            }
+////          }
+//          return sb.toString();
+//        }
+//      });
+//      writer.println(result);
 
     }
 
 
   }
 
-  private String unwrap(String text) {
-    if (text.startsWith("\"") && text.endsWith("\"") && text.length() > 2) {
-      return text.substring(1, text.length() - 1);
-    } else {
-      return text;
-    }
-  }
 
-  private List<PsiLiteralExpression> literalExpression(PsiExpression[] expressions) {
-    List<PsiLiteralExpression> r = new ArrayList<PsiLiteralExpression>();
-    for (PsiExpression e : expressions) {
-      if (e instanceof PsiLiteralExpression) {
-        r.add((PsiLiteralExpression) e);
-      } else if (e instanceof PsiBinaryExpression) {
-        PsiBinaryExpression be = (PsiBinaryExpression) e;
-        r.addAll(literalExpression(be.getOperands()));
-      }
-    }
-    return r;
-  }
 
   private void content(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String packageName = getParameter(request, "p", "packageName");
@@ -236,39 +208,44 @@ public class JumpToCodeServlet extends HttpServlet {
   }
 
   private void jump(HttpServletRequest request, HttpServletResponse response, boolean test) throws IOException {
-    String packageName = getParameter(request, "p", "packageName");
-    String fileName = getParameter(request, "f", "fileName");
-    String className = getParameter(request, "c", "className");
-    int lineNumber = parseInt(getParameter(request, "l", "lineNumber"), 0);
-    String project = request.getParameter("project");
-    String module = request.getParameter("module");
-    SourceLocation location;
-    if (packageName != null && fileName != null) {
-      location = new SourceLocation(packageName, fileName, lineNumber, project, module);
-    } else {
-      if (className != null) {
-        location = new SourceLocation(className);
-      } else {
-        error(response, "either (packageName,fileName) or (className) is required");
-        return;
-      }
+//    String packageName = getParameter(request, "p", "packageName");
+//    String fileName = getParameter(request, "f", "fileName");
+//    String className = getParameter(request, "c", "className");
+//    int lineNumber = parseInt(getParameter(request, "l", "lineNumber"), 0);
+//    String project = request.getParameter("project");
+//    String module = request.getParameter("module");
+//    SourceLocation location;
+
+
+
+    final Optional<String> pkg = getOptParameter(request, "p", "packageName");
+    final Optional<String> clazz = getOptParameter(request, "c", "className");
+    final Optional<String> file = getOptParameter(request, "f", "file");
+    final Optional<String> line = getOptParameter(request, "l", "lineNumber");
+    final Optional<String> msg = getOptParameter(request, "m", "message");
+    final List<JumpLocation> locations = FileUtils.findLocation(pkg, clazz, file, line, msg);
+
+    if (locations.isEmpty()) {
+      response.sendError(HttpServletResponse.SC_NOT_FOUND,"Class not found");
+      return;
     }
+
     boolean ok;
     if (test) {
-      ok = FileUtils.isReachable(location);
+      ok = !locations.isEmpty();
     } else {
-      ok = FileUtils.jumpToLocation(location);
+      ok = FileUtils.jumpToLocation(locations);
     }
     if (ok) {
       response.setStatus(HttpServletResponse.SC_OK);
       if (test) {
-        response.getWriter().println("OK, found " + location);
+        response.getWriter().println("OK, found " );
       } else {
-        response.getWriter().println("OK, jumped to " + location);
+        response.getWriter().println("OK, jumped to ");
       }
     } else {
       response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-      response.getWriter().println("Not found: " + location);
+      response.getWriter().println("Not found: ");
     }
   }
 

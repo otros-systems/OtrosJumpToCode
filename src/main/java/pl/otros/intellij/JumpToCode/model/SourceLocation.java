@@ -20,7 +20,7 @@ import com.intellij.openapi.util.text.StringUtil;
 
 /**
  */
-public class SourceLocation {
+public class SourceLocation implements JumpLocation {
 
   private String packageName;
 
