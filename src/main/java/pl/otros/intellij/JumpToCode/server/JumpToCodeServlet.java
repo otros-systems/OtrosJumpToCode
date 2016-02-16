@@ -57,14 +57,16 @@ public class JumpToCodeServlet extends HttpServlet {
   }
 
   protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    response.setContentType("text/html");
     response.addHeader("ide", "idea");
 
     String operation = getParameter(request, "operation", "o", "form");
     if (operation.equals("form")) {
+      response.setContentType("text/html");
       form(response);
       return;
     }
+    response.setContentType("text/plain");
+    System.out.println("Invoked operation  " + operation);
     if (StringUtils.equalsIgnoreCase("jump", operation)) {
       jump(request, response, false);
     } else if (StringUtils.equalsIgnoreCase("test", operation)) {
@@ -73,13 +75,12 @@ public class JumpToCodeServlet extends HttpServlet {
       content(request, response);
     } else if (StringUtils.equalsIgnoreCase("all", operation)) {
       final String wholeClass = FileUtils.findWholeClass(getParameter(request, "c", "className"));
-      response.setContentType("text/plain");
       if (wholeClass.length() > 0) {
         response.getWriter().print(wholeClass);
       } else {
         response.sendError(HttpServletResponse.SC_NOT_FOUND);
       }
-    }  else {
+    } else {
       error(response, "Unexpected operation");
     }
   }
@@ -90,8 +91,14 @@ public class JumpToCodeServlet extends HttpServlet {
     final Optional<String> file = getOptParameter(request, "f", "file");
     final Optional<String> line = getOptParameter(request, "l", "lineNumber");
     final Optional<String> msg = getOptParameter(request, "m", "message");
+    System.out.println("Request " +
+        "\npkg:   " + pkg +
+        "\nclazz: " + clazz +
+        "\nfile:  " + file +
+        "\nline:  " + line +
+        "\nmsg:   " + msg);
 
-    List<String> contents = FileUtils.getContent(pkg,clazz,file,line,msg);
+    List<String> contents = FileUtils.getContent(pkg, clazz, file, line, msg);
 
     if (contents.size() > 0) {
       response.setStatus(HttpServletResponse.SC_OK);
@@ -110,7 +117,7 @@ public class JumpToCodeServlet extends HttpServlet {
     final List<JumpLocation> locations = FileUtils.findLocation(pkg, clazz, file, line, msg);
 
     if (locations.isEmpty()) {
-      response.sendError(HttpServletResponse.SC_NOT_FOUND,"Class not found");
+      response.sendError(HttpServletResponse.SC_NOT_FOUND, "Class not found");
       return;
     }
 
@@ -120,11 +127,14 @@ public class JumpToCodeServlet extends HttpServlet {
     } else {
       ok = FileUtils.jumpToLocation(locations);
     }
+    System.out.println("JumpToCodeServlet.jump ok="+ok);
     if (ok) {
       response.setStatus(HttpServletResponse.SC_OK);
       if (test) {
-        response.getWriter().println("OK, found " );
+        response.getWriter().println("OK, found ");
+        System.out.println("JumpToCodeServlet.jump found ");
       } else {
+        System.out.println("JumpToCodeServlet.jump jumped");
         response.getWriter().println("OK, jumped to ");
       }
     } else {

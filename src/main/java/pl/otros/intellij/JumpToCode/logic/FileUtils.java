@@ -87,7 +87,8 @@ public class FileUtils {
       String fqcn = StringUtils.isEmpty(pkg.or("")) ? clazz.get() : pkg.get() + "." + clazz.get();
       String msg = message.get();
       jumpLocations.addAll(findByLogMessage(fqcn, msg));
-    } else if (file.isPresent() && line.isPresent()) {
+    }
+    if (file.isPresent() && line.isPresent()) {
       jumpLocations.add(new SourceLocation(pkg.or(""), file.get(), Integer.parseInt(line.get())));
     }
 
@@ -140,7 +141,9 @@ public class FileUtils {
               }
             }
           };
-          javaRecursiveElementVisitor.visitElement(aClass);
+          if (aClass!=null){
+            javaRecursiveElementVisitor.visitElement(aClass);
+          }
           return result;
         }
       });
@@ -173,7 +176,8 @@ public class FileUtils {
       String fqcn = StringUtils.isEmpty(pkg.or("")) ? clazz.get() : pkg.get() + "." + clazz.get();
       String msg = message.get();
       r.addAll(getContentByMessage(fqcn, msg));
-    } else if (file.isPresent() && line.isPresent()) {
+    }
+    if (file.isPresent() && line.isPresent() && StringUtils.isNotBlank(line.get()) && StringUtils.isNumeric(line.get())) {
       final SourceLocation location = new SourceLocation(pkg.or(""), file.get(), Integer.parseInt(line.get()));
       r.addAll(getContentByLine(location));
     }
