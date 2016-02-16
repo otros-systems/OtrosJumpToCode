@@ -88,7 +88,7 @@ public class FileUtils {
       String msg = message.get();
       jumpLocations.addAll(findByLogMessage(fqcn, msg));
     }
-    if (file.isPresent() && line.isPresent()) {
+    if (file.isPresent() && line.isPresent() && StringUtils.isNotBlank(line.get()) && StringUtils.isNumeric(line.get())) {
       jumpLocations.add(new SourceLocation(pkg.or(""), file.get(), Integer.parseInt(line.get())));
     }
 
@@ -123,7 +123,7 @@ public class FileUtils {
                     final PsiClass containingClass = psiMethod.getContainingClass();
                     if (containingClass != null) {
                       String caller = Optional.fromNullable(containingClass.getQualifiedName()).or("");
-                      if (caller.contains("Logger")) {
+                      if (caller.contains("Logger") || caller.contains("log4j.Category")) {
                         final List<PsiLiteralExpression> psiLiteralExpressions = literalExpression(mc.getArgumentList().getExpressions());
                         for (PsiLiteralExpression psiLiteralExpression : psiLiteralExpressions) {
                           String text = unwrap(psiLiteralExpression.getText());
@@ -141,7 +141,7 @@ public class FileUtils {
               }
             }
           };
-          if (aClass!=null){
+          if (aClass != null) {
             javaRecursiveElementVisitor.visitElement(aClass);
           }
           return result;
@@ -208,19 +208,19 @@ public class FileUtils {
                 newLinesPositions.add(i);
               }
             }
-            start = newLinesPositions.get(Math.max(newLinesPositions.size()-5,0));
+            start = newLinesPositions.get(Math.max(newLinesPositions.size() - 5, 0));
           }
           int end = StringUtils.indexOf(content, '\n', methodCallStart + psiModelLocation.getTextLength());
           String toDisplay = content.substring(start, end);
           final String[] lines = toDisplay.split("\n");
           final StringBuilder sb = new StringBuilder();
           sb.append("\nPath: ").append(((PsiModelLocation) location).getContainingFile().getVirtualFile().getCanonicalPath()).append("\n");
-          if (lines.length>10){
-            for (int i=0;i<4;i++){
+          if (lines.length > 10) {
+            for (int i = 0; i < 4; i++) {
               sb.append(lines[i]).append("\n");
             }
             sb.append(".......\n.......\n");
-            for (int i=lines.length-5;i<lines.length-1;i++){
+            for (int i = lines.length - 5; i < lines.length - 1; i++) {
               sb.append(lines[i]).append("\n");
             }
           } else {

@@ -90,12 +90,6 @@ public class JumpToCodeServlet extends HttpServlet {
     final Optional<String> file = getOptParameter(request, "f", "file");
     final Optional<String> line = getOptParameter(request, "l", "lineNumber");
     final Optional<String> msg = getOptParameter(request, "m", "message");
-    System.out.println("Request " +
-        "\npkg:   " + pkg +
-        "\nclazz: " + clazz +
-        "\nfile:  " + file +
-        "\nline:  " + line +
-        "\nmsg:   " + msg);
 
     List<String> contents = FileUtils.getContent(pkg, clazz, file, line, msg);
 
