@@ -16,12 +16,12 @@
 
 package pl.otros.intellij.JumpToCode.server;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import org.apache.commons.lang.StringUtils;
 import pl.otros.intellij.JumpToCode.logic.FileCopyUtils;
 import pl.otros.intellij.JumpToCode.logic.FileUtils;
 import pl.otros.intellij.JumpToCode.model.JumpLocation;
-import pl.otros.intellij.JumpToCode.model.SourceLocation;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -85,28 +85,17 @@ public class JumpToCodeServlet extends HttpServlet {
   }
 
   private void content(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    //TODO add finding by msg
-    String packageName = getParameter(request, "p", "packageName");
-    String fileName = getParameter(request, "f", "fileName");
-    String className = getParameter(request, "c", "className");
-    int lineNumber = parseInt(getParameter(request, "l", "lineNumber"), 0);
-    SourceLocation location;
-    if (packageName != null && fileName != null) {
-      location = new SourceLocation(packageName, fileName, lineNumber);
-    } else {
-      if (className != null) {
-        location = new SourceLocation(className);
-      } else {
-        error(response, "either (packageName,fileName) or (className) is required");
-        return;
-      }
-    }
-    String content = FileUtils.getContent(location);
+    final Optional<String> pkg = getOptParameter(request, "p", "packageName");
+    final Optional<String> clazz = getOptParameter(request, "c", "className");
+    final Optional<String> file = getOptParameter(request, "f", "file");
+    final Optional<String> line = getOptParameter(request, "l", "lineNumber");
+    final Optional<String> msg = getOptParameter(request, "m", "message");
 
-    if (content.length() > 0) {
+    List<String> contents = FileUtils.getContent(pkg,clazz,file,line,msg);
+
+    if (contents.size() > 0) {
       response.setStatus(HttpServletResponse.SC_OK);
-      response.addHeader("line", Integer.toString(location.getLineNumber()));
-      response.getWriter().append(content);
+      response.getWriter().append(Joiner.on("\n-----------------\n").join(contents));
     } else {
       response.setStatus(HttpServletResponse.SC_NOT_FOUND);
     }
@@ -148,17 +137,6 @@ public class JumpToCodeServlet extends HttpServlet {
     final InputStream formIs = getClass().getClassLoader().getResourceAsStream("form.html");
     FileCopyUtils.copy(formIs, response.getOutputStream());
     response.setStatus(HttpServletResponse.SC_OK);
-  }
-
-  private int parseInt(String value, int defaultValue) {
-    if (value == null) {
-      return defaultValue;
-    }
-    try {
-      return Integer.parseInt(value);
-    } catch (NumberFormatException e) {
-      return defaultValue;
-    }
   }
 
   private void error(HttpServletResponse response, String message) throws IOException {

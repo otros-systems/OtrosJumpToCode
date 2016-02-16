@@ -16,6 +16,7 @@
 
 package pl.otros.intellij.JumpToCode.logic;
 
+import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.intellij.ide.highlighter.JavaClassFileType;
 import com.intellij.ide.highlighter.JavaFileType;
@@ -27,12 +28,13 @@ import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.roots.PackageIndex;
-import com.intellij.openapi.roots.ProjectFileIndex;
 import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.util.Computable;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.*;
 import com.intellij.psi.impl.JavaPsiFacadeEx;
+import com.intellij.psi.impl.source.PsiClassImpl;
+import com.intellij.psi.impl.source.PsiMethodImpl;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.search.PsiShortNamesCache;
 import org.apache.commons.lang.StringUtils;
@@ -85,7 +87,7 @@ public class FileUtils {
       String fqcn = StringUtils.isEmpty(pkg.or("")) ? clazz.get() : pkg.get() + "." + clazz.get();
       String msg = message.get();
       jumpLocations.addAll(findByLogMessage(fqcn, msg));
-    } else if (file.isPresent() && line.isPresent()){
+    } else if (file.isPresent() && line.isPresent()) {
       jumpLocations.add(new SourceLocation(pkg.or(""), file.get(), Integer.parseInt(line.get())));
     }
 
@@ -108,9 +110,12 @@ public class FileUtils {
             @Override
             public void visitReferenceElement(PsiJavaCodeReferenceElement reference) {
               super.visitReferenceElement(reference);
+
+              final PsiElement context = reference.getContext();
+
               //find all method invocation
-              if (reference.getContext() instanceof PsiMethodCallExpression) {
-                PsiMethodCallExpression mc = (PsiMethodCallExpression) reference.getContext();
+              if (context instanceof PsiMethodCallExpression) {
+                PsiMethodCallExpression mc = (PsiMethodCallExpression) context;
                 if (((PsiReferenceExpression) mc.getFirstChild()).resolve() != null) {
                   final PsiMethod psiMethod = (PsiMethod) ((PsiReferenceExpression) mc.getFirstChild()).resolve();
                   if (psiMethod != null) {
@@ -125,7 +130,7 @@ public class FileUtils {
                             final int textOffset = mc.getTextOffset();
                             final int textLength = mc.getTextLength();
                             final PsiFile containingFile = aClass.getContainingFile();
-                            result.add(new PsiModelLocation(containingFile, textOffset, textLength, mc));
+                            result.add(new PsiModelLocation(containingFile, textOffset, textLength, mc, extractParent(mc)));
                           }
                         }
                       }
@@ -144,21 +149,105 @@ public class FileUtils {
     return jumpLocations;
   }
 
-  public static String getContent(SourceLocation location) {
+  public static Optional<PsiElement> extractParent(PsiElement psiElement) {
+    final PsiElement parent = psiElement.getParent();
+    if (parent != null) {
+      if (parent instanceof PsiMethodImpl || parent instanceof PsiClassImpl) {
+        return Optional.of(parent);
+      } else {
+        return extractParent(parent);
+      }
+    } else {
+      return Optional.absent();
+    }
+  }
+
+
+  public static List<String> getContent(Optional<String> pkg,
+                                        Optional<String> clazz,
+                                        Optional<String> file,
+                                        Optional<String> line,
+                                        Optional<String> message) {
+    final ArrayList<String> r = new ArrayList<String>();
+    if (clazz.isPresent() && message.isPresent()) {
+      String fqcn = StringUtils.isEmpty(pkg.or("")) ? clazz.get() : pkg.get() + "." + clazz.get();
+      String msg = message.get();
+      r.addAll(getContentByMessage(fqcn, msg));
+    } else if (file.isPresent() && line.isPresent()) {
+      final SourceLocation location = new SourceLocation(pkg.or(""), file.get(), Integer.parseInt(line.get()));
+      r.addAll(getContentByLine(location));
+    }
+
+    return r;
+  }
+
+  public static List<String> getContentByMessage(final String fqcn, final String code) {
+    final ArrayList<String> list = new ArrayList<String>();
+    final List<? extends JumpLocation> locations = findByLogMessage(fqcn, code);
+    for (JumpLocation location : locations) {
+      if (location instanceof PsiModelLocation) {
+        final PsiModelLocation psiModelLocation = (PsiModelLocation) location;
+        final VirtualFile virtualFile = psiModelLocation.getContainingFile().getContainingFile().getVirtualFile();
+        try {
+          final String content = new String(virtualFile.contentsToByteArray());
+          final Function<PsiElement, Integer> psiElementToOffset = new PsiElementIntegerFunction();
+          final int methodCallStart = psiModelLocation.getTextOffset();
+          int start = 0;
+          Optional<Integer> methodCallOffset = psiModelLocation.getParent().transform(psiElementToOffset);
+          if (methodCallOffset.isPresent()) {
+            start = StringUtils.lastIndexOf(content.substring(0, methodCallOffset.get()), '\n');
+          } else {
+            final String allFile = readVirtualFile(((PsiModelLocation) location).getContainingFile().getVirtualFile());
+            final ArrayList<Integer> newLinesPositions = new ArrayList<Integer>();
+            for (int i = 0; i < methodCallStart && i < allFile.length(); i++) {
+              if (allFile.charAt(i) == '\n') {
+                newLinesPositions.add(i);
+              }
+            }
+            start = newLinesPositions.get(Math.max(newLinesPositions.size()-5,0));
+          }
+          int end = StringUtils.indexOf(content, '\n', methodCallStart + psiModelLocation.getTextLength());
+          String toDisplay = content.substring(start, end);
+          final String[] lines = toDisplay.split("\n");
+          final StringBuilder sb = new StringBuilder();
+          sb.append("\nPath: ").append(((PsiModelLocation) location).getContainingFile().getVirtualFile().getCanonicalPath()).append("\n");
+          if (lines.length>10){
+            for (int i=0;i<4;i++){
+              sb.append(lines[i]).append("\n");
+            }
+            sb.append(".......\n.......\n");
+            for (int i=lines.length-5;i<lines.length-1;i++){
+              sb.append(lines[i]).append("\n");
+            }
+          } else {
+            sb.append(toDisplay);
+          }
+          list.add(sb.toString());
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+      }
+    }
+    return list;
+  }
+
+
+  public static List<String> getContentByLine(SourceLocation location) {
     List<SourceFile> files = findSourceFiles(location);
     final int lineNumber = location.getLineNumber() - 1;
-    StringBuilder stringBuilder = new StringBuilder();
+    List<String> results = new ArrayList<String>();
     for (SourceFile sourceFile : files) {
       final OpenFileDescriptor ofd = new OpenFileDescriptor(sourceFile.getProject(), sourceFile.getVirtualFile(), lineNumber, 1);
       try {
+        StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("\nPath: ").append(ofd.getFile().getCanonicalPath()).append("\n");
         readFileSelectedLines(lineNumber, ofd.getFile().getInputStream(), stringBuilder);
-        stringBuilder.append("\n");
+        results.add(stringBuilder.toString().trim());
       } catch (IOException e) {
         PluginManager.getLogger().error("Can't read source file", e);
       }
     }
-    return stringBuilder.toString().trim();
+    return results;
   }
 
   static void readFileSelectedLines(int lineNumber, InputStream inputStream, StringBuilder stringBuilder) {
@@ -243,12 +332,11 @@ public class FileUtils {
     for (Project project : projects) {
       ProjectRootManager prm = ProjectRootManager.getInstance(project);
       PackageIndex packageIndex = PackageIndex.getInstance(project);
-      ProjectFileIndex fileIndex = prm.getFileIndex();
       VirtualFile[] dirs = packageIndex.getDirectoriesByPackageName(location.getPackageName(), true);
       for (VirtualFile vf : dirs) {
         VirtualFile child = vf.findChild(location.getFileName());
         if (child != null) {
-          SourceFile file = new SourceFile(project, fileIndex.getModuleForFile(child), child);
+          SourceFile file = new SourceFile(project, child);
           matches.add(file);
         }
       }
@@ -270,23 +358,13 @@ public class FileUtils {
         //check if this is source
         if (p.canNavigateToSource()) {
           final PsiFile containingFile = p.getContainingFile();
-
-//          final OpenFileDescriptor openFileDescriptor = new OpenFileDescriptor(project, containingFile.getVirtualFile(), 1, 1);
-//          if (openFileDescriptor.canNavigateToSource()){
-//            System.out.println("Can navigate to source");
-//            final VirtualFile file = openFileDescriptor.getFile();
-//            return readVirtualFile(file);
-//          }
           final FileType fileType = containingFile.getFileType();
           final String defaultExtension = fileType.getDefaultExtension();
 
           if (fileType instanceof JavaFileType) {
-            JavaFileType file = (JavaFileType) fileType;
             final VirtualFile virtualFile = containingFile.getVirtualFile();
             return readVirtualFile(virtualFile);
           } else if (fileType instanceof JavaClassFileType) {
-            JavaClassFileType javaClassFileType = (JavaClassFileType) fileType;
-            //TODO get source of class?
             return "";
           } else if (defaultExtension.equals("scala")) {
             final VirtualFile virtualFile = containingFile.getVirtualFile();
@@ -368,6 +446,13 @@ public class FileUtils {
       }
     }
     return false;
+  }
+
+  private static class PsiElementIntegerFunction implements Function<PsiElement, Integer> {
+    @Override
+    public Integer apply(PsiElement psiElement) {
+      return psiElement.getTextOffset();
+    }
   }
 }
 
