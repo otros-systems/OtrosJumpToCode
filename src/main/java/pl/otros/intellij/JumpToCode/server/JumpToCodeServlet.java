@@ -66,7 +66,6 @@ public class JumpToCodeServlet extends HttpServlet {
       return;
     }
     response.setContentType("text/plain");
-    System.out.println("Invoked operation  " + operation);
     if (StringUtils.equalsIgnoreCase("jump", operation)) {
       jump(request, response, false);
     } else if (StringUtils.equalsIgnoreCase("test", operation)) {
@@ -127,14 +126,11 @@ public class JumpToCodeServlet extends HttpServlet {
     } else {
       ok = FileUtils.jumpToLocation(locations);
     }
-    System.out.println("JumpToCodeServlet.jump ok="+ok);
     if (ok) {
       response.setStatus(HttpServletResponse.SC_OK);
       if (test) {
         response.getWriter().println("OK, found ");
-        System.out.println("JumpToCodeServlet.jump found ");
       } else {
-        System.out.println("JumpToCodeServlet.jump jumped");
         response.getWriter().println("OK, jumped to ");
       }
     } else {
