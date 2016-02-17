@@ -35,6 +35,20 @@ import java.util.List;
  */
 public class JumpToCodeServlet extends HttpServlet {
 
+  private String version;
+  private String pluginFeatures = Joiner.on(",").join(
+      "jumpByLine",
+      "jumpByMessage",
+      "contentByLine",
+      "contentByMessage",
+      "allFile"
+  );
+
+  public JumpToCodeServlet(String version) {
+    this.version = version;
+  }
+
+
   private static String getParameter(HttpServletRequest request, String shortName, String longName) {
     String value = request.getParameter(longName);
     if (value == null) {
@@ -58,7 +72,8 @@ public class JumpToCodeServlet extends HttpServlet {
 
   protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     response.addHeader("ide", "idea");
-
+    response.addHeader("plugin-version",version);
+    response.addHeader("plugin-features", pluginFeatures);
     String operation = getParameter(request, "operation", "o", "form");
     if (operation.equals("form")) {
       response.setContentType("text/html");

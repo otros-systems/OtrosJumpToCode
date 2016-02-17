@@ -26,6 +26,10 @@
       <BR>
       <B>Version 1.3</B><BR/>
       Counting jumps count<BR/>
+      <BR>
+      <B>Version 1.4</B><BR/>
+      Jump to code or get content based on logger and log message.
+      <BR/>
             ]]>
     </change-notes>
 

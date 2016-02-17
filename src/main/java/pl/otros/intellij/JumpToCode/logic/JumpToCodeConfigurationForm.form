@@ -162,7 +162,7 @@
           <lineWrap value="true"/>
           <rows value="3"/>
           <text value="."/>
-          <wrapStyleWord value="false"/>
+          <wrapStyleWord value="true"/>
         </properties>
       </component>
       <component id="7b61f" class="javax.swing.JButton" binding="donateWithPaypal">

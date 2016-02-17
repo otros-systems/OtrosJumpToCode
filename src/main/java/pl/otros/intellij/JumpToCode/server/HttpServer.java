@@ -69,7 +69,8 @@ public class HttpServer {
     connector.setHost(config.getHostName());
     server.setConnectors(new Connector[]{connector});
     Context root = new Context(server, "/", Context.NO_SESSIONS);
-    root.addServlet(new ServletHolder(new JumpToCodeServlet()), "/*");
+    //TODO replace with value read from plugin.xml
+    root.addServlet(new ServletHolder(new JumpToCodeServlet("1.4")), "/*");
     server.setStopAtShutdown(true);
     try {
       server.start();
@@ -81,5 +82,5 @@ public class HttpServer {
       logger.error("failed to start JumpToCode HTTP server", e);
     }
   }
-
 }
+
