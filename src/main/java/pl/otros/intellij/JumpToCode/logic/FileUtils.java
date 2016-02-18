@@ -431,8 +431,12 @@ public class FileUtils {
       if (e instanceof PsiLiteralExpression) {
         r.add((PsiLiteralExpression) e);
       } else if (e instanceof PsiBinaryExpression) {
+        //logger.info("message",param);
         PsiBinaryExpression be = (PsiBinaryExpression) e;
         r.addAll(literalExpression(be.getOperands()));
+      } else if (e instanceof PsiPolyadicExpression){
+        //logger.info("String " + something + " something")
+        r.addAll(literalExpression(((PsiPolyadicExpression) e).getOperands()));
       }
     }
     return r;

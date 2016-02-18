@@ -16,6 +16,7 @@
 
 package pl.otros.intellij.JumpToCode.server;
 
+import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import org.apache.commons.lang.StringUtils;
@@ -106,6 +107,7 @@ public class JumpToCodeServlet extends HttpServlet {
     final Optional<String> line = getOptParameter(request, "l", "lineNumber");
     final Optional<String> msg = getOptParameter(request, "m", "message");
 
+    System.out.printf("Content of pkg %s, clazz: %s, file %s, line %s%n" ,pkg.or(""),clazz.or(""),file.or(""),line.or(""));
     List<String> contents = FileUtils.getContent(pkg, clazz, file, line, msg);
 
     if (contents.size() > 0) {
@@ -123,7 +125,13 @@ public class JumpToCodeServlet extends HttpServlet {
     final Optional<String> line = getOptParameter(request, "l", "lineNumber");
     final Optional<String> msg = getOptParameter(request, "m", "message");
     final List<JumpLocation> locations = FileUtils.findLocation(pkg, clazz, file, line, msg);
-
+    final Function<String, String> function = new Function<String, String>() {
+      @Override
+      public String apply(String s) {
+        return StringUtils.substring(s, 0, 30);
+      }
+    };
+    System.out.printf("Jump to pkg %s, clazz: %s, file %s, line %s, msg %s %n" ,pkg.or(""),clazz.or(""),file.or(""),line.or(""),msg.transform(function).or(""));
     if (locations.isEmpty()) {
       response.sendError(HttpServletResponse.SC_NOT_FOUND, "Class not found");
       return;
