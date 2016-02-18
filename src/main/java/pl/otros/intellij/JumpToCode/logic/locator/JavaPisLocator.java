@@ -1,4 +1,4 @@
-package pl.otros.intellij.JumpToCode.logic.locator;
+package pl.otros.intellij.jumptocode.logic.locator;
 
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
@@ -13,8 +13,8 @@ import com.intellij.psi.impl.JavaPsiFacadeEx;
 import com.intellij.psi.impl.source.PsiClassImpl;
 import com.intellij.psi.impl.source.PsiMethodImpl;
 import org.apache.commons.lang.StringUtils;
-import pl.otros.intellij.JumpToCode.model.JumpLocation;
-import pl.otros.intellij.JumpToCode.model.PsiModelLocation;
+import pl.otros.intellij.jumptocode.model.JumpLocation;
+import pl.otros.intellij.jumptocode.model.PsiModelLocation;
 
 import java.io.IOException;
 import java.nio.charset.Charset;

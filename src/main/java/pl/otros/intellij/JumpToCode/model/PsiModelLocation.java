@@ -1,4 +1,4 @@
-package pl.otros.intellij.JumpToCode.model;
+package pl.otros.intellij.jumptocode.model;
 
 import com.google.common.base.Optional;
 import com.intellij.psi.PsiElement;

@@ -1,8 +1,8 @@
-package pl.otros.intellij.JumpToCode.logic;
+package pl.otros.intellij.jumptocode.logic;
 
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.markup.RangeHighlighter;
-import pl.otros.intellij.JumpToCode.gui.SwingUtils;
+import pl.otros.intellij.jumptocode.gui.SwingUtils;
 
 class RemoveHighLighter implements Runnable {
   private Editor editor;

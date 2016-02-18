@@ -1,4 +1,4 @@
-package pl.otros.intellij.JumpToCode.logic;
+package pl.otros.intellij.jumptocode.logic;
 
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.colors.EditorColors;

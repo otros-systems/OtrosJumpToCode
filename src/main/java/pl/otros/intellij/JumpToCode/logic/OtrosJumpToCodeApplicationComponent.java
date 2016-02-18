@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package pl.otros.intellij.JumpToCode.logic;
+package pl.otros.intellij.jumptocode.logic;
 
 import com.intellij.ide.plugins.PluginManager;
 import com.intellij.openapi.actionSystem.ActionManager;
@@ -28,7 +28,7 @@ import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import pl.otros.intellij.JumpToCode.server.HttpServer;
+import pl.otros.intellij.jumptocode.server.HttpServer;
 
 import javax.swing.*;
 

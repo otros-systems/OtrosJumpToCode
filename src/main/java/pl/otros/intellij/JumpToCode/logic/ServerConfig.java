@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package pl.otros.intellij.JumpToCode.logic;
+package pl.otros.intellij.jumptocode.logic;
 
 /**
  */

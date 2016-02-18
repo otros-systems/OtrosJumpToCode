@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package pl.otros.intellij.JumpToCode;
+package pl.otros.intellij.jumptocode;
 
 import com.intellij.ide.util.PropertiesComponent;
 

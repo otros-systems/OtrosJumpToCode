@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package pl.otros.intellij.JumpToCode.logic;
+package pl.otros.intellij.jumptocode.logic;
 
 import com.google.common.io.ByteStreams;
 import com.intellij.ide.highlighter.JavaClassFileType;
@@ -30,15 +30,15 @@ import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.search.PsiShortNamesCache;
-import pl.otros.intellij.JumpToCode.Properties;
-import pl.otros.intellij.JumpToCode.gui.SwingUtils;
-import pl.otros.intellij.JumpToCode.logic.locator.JavaFileWithLineLocator;
-import pl.otros.intellij.JumpToCode.logic.locator.JavaPisLocator;
-import pl.otros.intellij.JumpToCode.logic.locator.LocationInfo;
-import pl.otros.intellij.JumpToCode.logic.locator.Locator;
-import pl.otros.intellij.JumpToCode.model.JumpLocation;
-import pl.otros.intellij.JumpToCode.model.PsiModelLocation;
-import pl.otros.intellij.JumpToCode.model.SourceLocation;
+import pl.otros.intellij.jumptocode.Properties;
+import pl.otros.intellij.jumptocode.gui.SwingUtils;
+import pl.otros.intellij.jumptocode.logic.locator.JavaFileWithLineLocator;
+import pl.otros.intellij.jumptocode.logic.locator.JavaPisLocator;
+import pl.otros.intellij.jumptocode.logic.locator.LocationInfo;
+import pl.otros.intellij.jumptocode.logic.locator.Locator;
+import pl.otros.intellij.jumptocode.model.JumpLocation;
+import pl.otros.intellij.jumptocode.model.PsiModelLocation;
+import pl.otros.intellij.jumptocode.model.SourceLocation;
 
 import java.io.IOException;
 import java.nio.charset.Charset;

@@ -1,6 +1,6 @@
-package pl.otros.intellij.JumpToCode.logic.locator;
+package pl.otros.intellij.jumptocode.logic.locator;
 
-import pl.otros.intellij.JumpToCode.model.JumpLocation;
+import pl.otros.intellij.jumptocode.model.JumpLocation;
 
 import java.util.List;
 

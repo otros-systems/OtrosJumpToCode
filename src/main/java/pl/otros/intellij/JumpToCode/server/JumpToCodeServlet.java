@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package pl.otros.intellij.JumpToCode.server;
+package pl.otros.intellij.jumptocode.server;
 
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import org.apache.commons.lang.StringUtils;
-import pl.otros.intellij.JumpToCode.logic.FileCopyUtils;
-import pl.otros.intellij.JumpToCode.logic.FileUtils;
-import pl.otros.intellij.JumpToCode.logic.locator.LocationInfo;
-import pl.otros.intellij.JumpToCode.model.JumpLocation;
+import pl.otros.intellij.jumptocode.logic.FileCopyUtils;
+import pl.otros.intellij.jumptocode.logic.FileUtils;
+import pl.otros.intellij.jumptocode.logic.locator.LocationInfo;
+import pl.otros.intellij.jumptocode.model.JumpLocation;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;

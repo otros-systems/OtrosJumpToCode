@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package pl.otros.intellij.JumpToCode.server;
+package pl.otros.intellij.jumptocode.server;
 
 import org.apache.log4j.Logger;
 import org.mortbay.jetty.Connector;
@@ -22,7 +22,7 @@ import org.mortbay.jetty.Server;
 import org.mortbay.jetty.bio.SocketConnector;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
-import pl.otros.intellij.JumpToCode.logic.ServerConfig;
+import pl.otros.intellij.jumptocode.logic.ServerConfig;
 
 /**
  */

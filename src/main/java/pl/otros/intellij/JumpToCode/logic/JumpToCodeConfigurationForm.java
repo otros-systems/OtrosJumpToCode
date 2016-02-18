@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package pl.otros.intellij.JumpToCode.logic;
+package pl.otros.intellij.jumptocode.logic;
 
-import pl.otros.intellij.JumpToCode.Properties;
-import pl.otros.intellij.JumpToCode.gui.DonateNotificationProvider;
+import pl.otros.intellij.jumptocode.Properties;
+import pl.otros.intellij.jumptocode.gui.DonateNotificationProvider;
 
 import javax.swing.*;
 import java.awt.*;

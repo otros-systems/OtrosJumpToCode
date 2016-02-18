@@ -1,4 +1,4 @@
-package pl.otros.intellij.JumpToCode.gui;
+package pl.otros.intellij.jumptocode.gui;
 
 import org.apache.log4j.Logger;
 

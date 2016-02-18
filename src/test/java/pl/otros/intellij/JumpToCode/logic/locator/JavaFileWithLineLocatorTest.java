@@ -1,4 +1,4 @@
-package pl.otros.intellij.JumpToCode.logic.locator;
+package pl.otros.intellij.jumptocode.logic.locator;
 
 import org.junit.Assert;
 import org.junit.Test;

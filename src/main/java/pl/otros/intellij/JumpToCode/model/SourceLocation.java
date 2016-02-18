@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package pl.otros.intellij.JumpToCode.model;
+package pl.otros.intellij.jumptocode.model;
 
 import com.intellij.openapi.util.text.StringUtil;
 

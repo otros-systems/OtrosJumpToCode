@@ -1,4 +1,4 @@
-package pl.otros.intellij.JumpToCode.model;
+package pl.otros.intellij.jumptocode.model;
 
 public interface JumpLocation {
 }

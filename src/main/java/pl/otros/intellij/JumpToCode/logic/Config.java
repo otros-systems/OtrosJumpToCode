@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package pl.otros.intellij.JumpToCode.logic;
+package pl.otros.intellij.jumptocode.logic;
 
 /**
  */
@@ -52,7 +52,7 @@ public class Config implements ServerConfig {
     try {
       this.port = Integer.parseInt(port);
     } catch (NumberFormatException e) {
-      pl.otros.intellij.JumpToCode.logic.OtrosJumpToCodeApplicationComponent.LOGGER.info("user entered invalid port number: " + port);
+      pl.otros.intellij.jumptocode.logic.OtrosJumpToCodeApplicationComponent.LOGGER.info("user entered invalid port number: " + port);
       // TODO: show error dialog
     }
   }

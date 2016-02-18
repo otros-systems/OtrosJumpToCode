@@ -1,4 +1,4 @@
-package pl.otros.intellij.JumpToCode.gui;
+package pl.otros.intellij.jumptocode.gui;
 
 
 import com.intellij.icons.AllIcons;
@@ -10,7 +10,7 @@ import com.intellij.ui.EditorNotificationPanel;
 import com.intellij.ui.EditorNotifications;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import pl.otros.intellij.JumpToCode.Properties;
+import pl.otros.intellij.jumptocode.Properties;
 
 public class DonateNotificationProvider extends EditorNotifications.Provider<EditorNotificationPanel> {
   public static final String DONATION_URL =

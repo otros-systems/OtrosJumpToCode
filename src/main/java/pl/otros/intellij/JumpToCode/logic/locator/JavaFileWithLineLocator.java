@@ -1,12 +1,12 @@
-package pl.otros.intellij.JumpToCode.logic.locator;
+package pl.otros.intellij.jumptocode.logic.locator;
 
 import com.google.common.base.Optional;
 import com.intellij.ide.plugins.PluginManager;
 import com.intellij.openapi.fileEditor.OpenFileDescriptor;
-import pl.otros.intellij.JumpToCode.IOUtils;
-import pl.otros.intellij.JumpToCode.logic.SourceFile;
-import pl.otros.intellij.JumpToCode.logic.SourceFileFinder;
-import pl.otros.intellij.JumpToCode.model.SourceLocation;
+import pl.otros.intellij.jumptocode.IOUtils;
+import pl.otros.intellij.jumptocode.logic.SourceFile;
+import pl.otros.intellij.jumptocode.logic.SourceFileFinder;
+import pl.otros.intellij.jumptocode.model.SourceLocation;
 
 import java.io.BufferedReader;
 import java.io.IOException;

@@ -1,4 +1,4 @@
-package pl.otros.intellij.JumpToCode.logic.locator;
+package pl.otros.intellij.jumptocode.logic.locator;
 
 import com.google.common.base.Optional;
 

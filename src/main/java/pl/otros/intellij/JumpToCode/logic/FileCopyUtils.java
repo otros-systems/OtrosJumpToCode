@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package pl.otros.intellij.JumpToCode.logic;
+package pl.otros.intellij.jumptocode.logic;
 
-import pl.otros.intellij.JumpToCode.IOUtils;
+import pl.otros.intellij.jumptocode.IOUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
