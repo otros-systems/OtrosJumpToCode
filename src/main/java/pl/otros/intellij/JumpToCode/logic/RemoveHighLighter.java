@@ -2,6 +2,7 @@ package pl.otros.intellij.JumpToCode.logic;
 
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.markup.RangeHighlighter;
+import pl.otros.intellij.JumpToCode.gui.SwingUtils;
 
 class RemoveHighLighter implements Runnable {
   private Editor editor;
@@ -13,7 +14,7 @@ class RemoveHighLighter implements Runnable {
   }
 
   public void run() {
-    FileUtils.invokeSwing(new Runnable() {
+    SwingUtils.invokeSwing(new Runnable() {
       public void run() {
         editor.getMarkupModel().removeHighlighter(highlighter);
       }

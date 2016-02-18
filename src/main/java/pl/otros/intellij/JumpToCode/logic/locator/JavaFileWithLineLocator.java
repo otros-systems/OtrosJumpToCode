@@ -42,7 +42,7 @@ public class JavaFileWithLineLocator implements Locator {
   }
 
 
-  public List<String> getContentByLine(SourceLocation location) {
+  protected List<String> getContentByLine(SourceLocation location) {
     List<SourceFile> files = sourceFileFinder.findSourceFiles(location);
     final int lineNumber = location.getLineNumber() - 1;
     List<String> results = new ArrayList<String>();
@@ -60,7 +60,7 @@ public class JavaFileWithLineLocator implements Locator {
     return results;
   }
 
-  void readFileSelectedLines(int lineNumber, InputStream inputStream, StringBuilder stringBuilder) {
+  protected void readFileSelectedLines(int lineNumber, InputStream inputStream, StringBuilder stringBuilder) {
     int currentLine = 1;
     BufferedReader bin = null;
     try {

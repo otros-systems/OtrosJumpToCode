@@ -39,7 +39,7 @@ import javax.swing.*;
 public class OtrosJumpToCodeApplicationComponent implements ApplicationComponent, Configurable,
     PersistentStateComponent<Config> {
 
-  static final com.intellij.openapi.diagnostic.Logger LOGGER = PluginManager.getLogger();
+  public static final com.intellij.openapi.diagnostic.Logger LOGGER = PluginManager.getLogger();
 
   private Config config = new Config();
 

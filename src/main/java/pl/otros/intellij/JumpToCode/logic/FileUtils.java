@@ -30,8 +30,8 @@ import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.search.PsiShortNamesCache;
-import org.apache.log4j.Logger;
 import pl.otros.intellij.JumpToCode.Properties;
+import pl.otros.intellij.JumpToCode.gui.SwingUtils;
 import pl.otros.intellij.JumpToCode.logic.locator.JavaFileWithLineLocator;
 import pl.otros.intellij.JumpToCode.logic.locator.JavaPisLocator;
 import pl.otros.intellij.JumpToCode.logic.locator.LocationInfo;
@@ -40,9 +40,7 @@ import pl.otros.intellij.JumpToCode.model.JumpLocation;
 import pl.otros.intellij.JumpToCode.model.PsiModelLocation;
 import pl.otros.intellij.JumpToCode.model.SourceLocation;
 
-import javax.swing.*;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -53,9 +51,8 @@ import java.util.concurrent.ScheduledExecutorService;
 /**
  */
 public class FileUtils {
-  private final static Logger logger = Logger.getLogger(FileUtils.class);
 
-  static final ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
+  public static final ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
 
   private static SourceFileFinder sourceFileFinder = new SourceFileFinder();
 
@@ -94,7 +91,7 @@ public class FileUtils {
       final FileEditorManager fem = FileEditorManager.getInstance(sourceFile.getProject());
       final OpenFileDescriptor ofd = new OpenFileDescriptor(sourceFile.getProject(), sourceFile.getVirtualFile(), lineNumber, 1);
       ToLineCodeJumper codeJumper = new ToLineCodeJumper(fem, ofd, lineNumber);
-      invokeSwing(codeJumper, true);
+      SwingUtils.invokeSwing(codeJumper, true);
       if (codeJumper.isOk()) {
         Properties.increaseJumpsCount();
         result = true;
@@ -108,7 +105,7 @@ public class FileUtils {
     final FileEditorManager fem = FileEditorManager.getInstance(psiFile.getProject());
     final OpenFileDescriptor openFileDescriptor = new OpenFileDescriptor(psiFile.getProject(), psiFile.getVirtualFile(), offset);
     final ToRangeCodeJumper codeJumper = new ToRangeCodeJumper(fem, openFileDescriptor, offset, length);
-    invokeSwing(codeJumper, true);
+    SwingUtils.invokeSwing(codeJumper, true);
     boolean result = false;
     if (codeJumper.isOk()) {
       Properties.increaseJumpsCount();
@@ -117,20 +114,6 @@ public class FileUtils {
     return result;
   }
 
-
-  static void invokeSwing(Runnable runnable, boolean wait) {
-    try {
-      if (wait) {
-        SwingUtilities.invokeAndWait(runnable);
-      } else {
-        SwingUtilities.invokeLater(runnable);
-      }
-    } catch (InterruptedException e) {
-      logger.error("Interrupted", e);
-    } catch (InvocationTargetException e) {
-      logger.error("InvocationTargetException", e);
-    }
-  }
 
   public static String findWholeClass(String clazz) {
     final PsiShortNamesCache instance = PsiShortNamesCache.getInstance(ProjectManager.getInstance().getDefaultProject());
@@ -151,7 +134,7 @@ public class FileUtils {
             return readVirtualFile(virtualFile);
           } else if (fileType instanceof JavaClassFileType) {
             return "";
-          } else if (defaultExtension.equals("scala")) {
+          } else if ("scala".equals(defaultExtension)) {
             final VirtualFile virtualFile = containingFile.getVirtualFile();
             return readVirtualFile(virtualFile);
           } else if (fileType.isBinary()) {

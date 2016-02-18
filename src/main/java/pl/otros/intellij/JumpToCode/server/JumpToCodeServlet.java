@@ -58,14 +58,6 @@ public class JumpToCodeServlet extends HttpServlet {
     return StringUtils.defaultString(value, "");
   }
 
-//  private static Optional<String> getOptParameter(HttpServletRequest request, String shortName, String longName) {
-//    String value = request.getParameter(longName);
-//    if (value == null) {
-//      value = request.getParameter(shortName);
-//    }
-//    return Optional.fromNullable(value);
-//  }
-
   private static String getParameter(HttpServletRequest request, String shortName, String longName, String defaultValue) {
     String value = getParameter(request, shortName, longName);
     return (value != null) ? value : defaultValue;
