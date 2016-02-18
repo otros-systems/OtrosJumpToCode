@@ -84,7 +84,7 @@ public class FileUtils {
                                                 Optional<String> message) {
     final ArrayList<JumpLocation> jumpLocations = new ArrayList<JumpLocation>();
     if (clazz.isPresent() && message.isPresent()) {
-      String fqcn = StringUtils.isEmpty(pkg.or("")) ? clazz.get() : pkg.get() + "." + clazz.get();
+      String fqcn = clazz.get();
       String msg = message.get();
       jumpLocations.addAll(findByLogMessage(fqcn, msg));
     }
@@ -111,9 +111,8 @@ public class FileUtils {
             @Override
             public void visitReferenceElement(PsiJavaCodeReferenceElement reference) {
               super.visitReferenceElement(reference);
-
               final PsiElement context = reference.getContext();
-
+              context.getClass().getName();
               //find all method invocation
               if (context instanceof PsiMethodCallExpression) {
                 PsiMethodCallExpression mc = (PsiMethodCallExpression) context;
