@@ -18,10 +18,10 @@ package pl.otros.intellij.JumpToCode.server;
 
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
-import com.google.common.base.Optional;
 import org.apache.commons.lang.StringUtils;
 import pl.otros.intellij.JumpToCode.logic.FileCopyUtils;
 import pl.otros.intellij.JumpToCode.logic.FileUtils;
+import pl.otros.intellij.JumpToCode.logic.locator.LocationInfo;
 import pl.otros.intellij.JumpToCode.model.JumpLocation;
 
 import javax.servlet.ServletException;
@@ -58,13 +58,13 @@ public class JumpToCodeServlet extends HttpServlet {
     return StringUtils.defaultString(value, "");
   }
 
-  private static Optional<String> getOptParameter(HttpServletRequest request, String shortName, String longName) {
-    String value = request.getParameter(longName);
-    if (value == null) {
-      value = request.getParameter(shortName);
-    }
-    return Optional.fromNullable(value);
-  }
+//  private static Optional<String> getOptParameter(HttpServletRequest request, String shortName, String longName) {
+//    String value = request.getParameter(longName);
+//    if (value == null) {
+//      value = request.getParameter(shortName);
+//    }
+//    return Optional.fromNullable(value);
+//  }
 
   private static String getParameter(HttpServletRequest request, String shortName, String longName, String defaultValue) {
     String value = getParameter(request, shortName, longName);
@@ -73,7 +73,7 @@ public class JumpToCodeServlet extends HttpServlet {
 
   protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     response.addHeader("ide", "idea");
-    response.addHeader("plugin-version",version);
+    response.addHeader("plugin-version", version);
     response.addHeader("plugin-features", pluginFeatures);
     String operation = getParameter(request, "operation", "o", "form");
     if (operation.equals("form")) {
@@ -101,14 +101,9 @@ public class JumpToCodeServlet extends HttpServlet {
   }
 
   private void content(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    final Optional<String> pkg = getOptParameter(request, "p", "packageName");
-    final Optional<String> clazz = getOptParameter(request, "c", "className");
-    final Optional<String> file = getOptParameter(request, "f", "file");
-    final Optional<String> line = getOptParameter(request, "l", "lineNumber");
-    final Optional<String> msg = getOptParameter(request, "m", "message");
+    final LocationInfo locationInfo = LocationInfo.parse(request);
 
-    System.out.printf("Content of pkg %s, clazz: %s, file %s, line %s%n" ,pkg.or(""),clazz.or(""),file.or(""),line.or(""));
-    List<String> contents = FileUtils.getContent(pkg, clazz, file, line, msg);
+    List<String> contents = FileUtils.getContent(locationInfo);
 
     if (contents.size() > 0) {
       response.setStatus(HttpServletResponse.SC_OK);
@@ -119,19 +114,14 @@ public class JumpToCodeServlet extends HttpServlet {
   }
 
   private void jump(HttpServletRequest request, HttpServletResponse response, boolean test) throws IOException {
-    final Optional<String> pkg = getOptParameter(request, "p", "packageName");
-    final Optional<String> clazz = getOptParameter(request, "c", "className");
-    final Optional<String> file = getOptParameter(request, "f", "file");
-    final Optional<String> line = getOptParameter(request, "l", "lineNumber");
-    final Optional<String> msg = getOptParameter(request, "m", "message");
-    final List<JumpLocation> locations = FileUtils.findLocation(pkg, clazz, file, line, msg);
+    final LocationInfo locationInfo = LocationInfo.parse(request);
+    final List<JumpLocation> locations = FileUtils.findLocation(locationInfo);
     final Function<String, String> function = new Function<String, String>() {
       @Override
       public String apply(String s) {
         return StringUtils.substring(s, 0, 30);
       }
     };
-    System.out.printf("Jump to pkg %s, clazz: %s, file %s, line %s, msg %s %n" ,pkg.or(""),clazz.or(""),file.or(""),line.or(""),msg.transform(function).or(""));
     if (locations.isEmpty()) {
       response.sendError(HttpServletResponse.SC_NOT_FOUND, "Class not found");
       return;

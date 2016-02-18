@@ -16,7 +16,6 @@
 
 package pl.otros.intellij.JumpToCode.logic;
 
-import org.apache.log4j.Logger;
 import pl.otros.intellij.JumpToCode.IOUtils;
 
 import java.io.IOException;
@@ -32,8 +31,6 @@ import java.io.OutputStream;
 public abstract class FileCopyUtils {
 
   public static final int BUFFER_SIZE = 4096;
-  private static final Logger logger = Logger.getLogger(FileCopyUtils.class);
-
   //---------------------------------------------------------------------
   // Copy methods for java.io.InputStream / java.io.OutputStream
   //---------------------------------------------------------------------

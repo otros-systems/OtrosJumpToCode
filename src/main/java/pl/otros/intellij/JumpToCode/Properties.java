@@ -30,34 +30,34 @@ import java.util.Random;
 
 public class Properties {
 
-    private static final String PROP_IGNORE_DONATION = "ignore_donation";
-    private static final String PROP_JUMP_COUNT = "JUMP_COUNT";
-    public static final int JUMP_THRESHOLD = 1024;
+  private static final String PROP_IGNORE_DONATION = "ignore_donation";
+  private static final String PROP_JUMP_COUNT = "JUMP_COUNT";
+  public static final int JUMP_THRESHOLD = 1024;
 
-    private Properties() {
-    }
+  private Properties() {
+  }
 
-    public static void setIgnoreDonationForNextNJumps() {
-        final int increase = new Random().nextInt(8) + 1;
-        final int newThreshold = getJumpsCount()-getJumpsCount() % JUMP_THRESHOLD + JUMP_THRESHOLD*increase;
-        PropertiesComponent.getInstance().setValue(PROP_IGNORE_DONATION, Integer.toString(
-                newThreshold));
-    }
+  public static void setIgnoreDonationForNextNJumps() {
+    final int increase = new Random().nextInt(8) + 1;
+    final int newThreshold = getJumpsCount() - getJumpsCount() % JUMP_THRESHOLD + JUMP_THRESHOLD * increase;
+    PropertiesComponent.getInstance().setValue(PROP_IGNORE_DONATION, Integer.toString(
+        newThreshold));
+  }
 
 
+  public static boolean displayDonations() {
+    final int indoreThreshold = PropertiesComponent.getInstance().getInt(PROP_IGNORE_DONATION, JUMP_THRESHOLD);
+    final int jumpsCount = getJumpsCount();
+    return jumpsCount >= indoreThreshold && jumpsCount >= JUMP_THRESHOLD;
+  }
 
-    public static boolean displayDonations() {
-        final int indoreThreshold = PropertiesComponent.getInstance().getOrInitInt(PROP_IGNORE_DONATION, JUMP_THRESHOLD);
-        final int jumpsCount = getJumpsCount();
-        return jumpsCount >= indoreThreshold && jumpsCount>=JUMP_THRESHOLD;
-    }
-    public static int getJumpsCount() {
-        return PropertiesComponent.getInstance().getOrInitInt(PROP_JUMP_COUNT, 0);
-    }
+  public static int getJumpsCount() {
+    return PropertiesComponent.getInstance().getInt(PROP_JUMP_COUNT, 0);
+  }
 
-    public static void increaseJumpsCount() {
-        final int i = getJumpsCount() + 1;
-        PropertiesComponent.getInstance().setValue(PROP_JUMP_COUNT, Integer.toString(i));
-    }
+  public static void increaseJumpsCount() {
+    final int i = getJumpsCount() + 1;
+    PropertiesComponent.getInstance().setValue(PROP_JUMP_COUNT, Integer.toString(i));
+  }
 
 }

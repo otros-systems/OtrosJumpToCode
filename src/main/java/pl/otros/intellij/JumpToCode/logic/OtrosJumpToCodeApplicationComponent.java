@@ -50,7 +50,6 @@ public class OtrosJumpToCodeApplicationComponent implements ApplicationComponent
     ToggleAction toggleAction = new ToggleAction("OtrosJumpToCode: Enable") {
 
 
-
       @Override
       public boolean isSelected(AnActionEvent anActionEvent) {
         return config.isEnabled();
@@ -58,14 +57,14 @@ public class OtrosJumpToCodeApplicationComponent implements ApplicationComponent
 
       @Override
       public void setSelected(AnActionEvent anActionEvent, boolean b) {
-        LOGGER.info("Setting enabled OtrosJumpToCode: "+ b);
+        LOGGER.info("Setting enabled OtrosJumpToCode: " + b);
         config.setEnabled(b);
         HttpServer.getInstance().configure(config);
 
       }
 
       @Override
-      public void update(AnActionEvent e) {
+      public void update(@NotNull AnActionEvent e) {
         super.update(e);
         final boolean selected = this.isSelected(e);
         LOGGER.info("Updating, selected: " + selected);
@@ -73,7 +72,7 @@ public class OtrosJumpToCodeApplicationComponent implements ApplicationComponent
       }
     };
 
-    ActionManager.getInstance().registerAction("OtrosJumpToCode-toggle",toggleAction);
+    ActionManager.getInstance().registerAction("OtrosJumpToCode-toggle", toggleAction);
   }
 
   @Nls

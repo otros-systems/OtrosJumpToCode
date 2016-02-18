@@ -28,7 +28,15 @@ sleep 0.3;http http://localhost:15987/ o==content c==pl.otros.logview.gui.LogVie
 sleep 0.3;http http://localhost:15987/ o==content c==pl.otros.logview.gui.LogViewMainFrame m=="Can't update search highlight"
 sleep 0.3;http http://localhost:15987/ o==content c==pl.otros.logview.gui.LogViewMainFrame m=="Error: "
 
-sleep 0.3;http http://localhost:15987/ o==content c==test.sampleapp.SampleApp m==Sending response, processing have taken "
+sleep 0.3;http http://localhost:15987/ o==content c==test.sampleapp.SampleApp m=="Sending response, processing have taken "
 
 sleep 0.3;http http://localhost:15987/ o==content p==pl.otros.logview.gui f==LogViewMainFrame.java l==120
 sleep 0.3;http http://localhost:15987/ o==content p==pl.otros.logview.gui f==LogViewMainFrame.java l==121
+
+
+
+sleep 0.3;http http://localhost:15987/ o==content c==test.sampleapp.SampleApp m=="Sending response, processing have taken "
+sleep 0.3;http http://localhost:15987/ o==jump c==test.sampleapp.SampleApp m=="Sending response, processing have taken "
+sleep 0.3;http http://localhost:15987/ o==jump c==test.sampleapp.SampleApp m=="Error on serving request"
+sleep 0.3;http http://localhost:15987/ o==jump p==test.sampleapp f==SampleApp.java l==20
+

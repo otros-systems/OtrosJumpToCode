@@ -16,8 +16,6 @@
 
 package pl.otros.intellij.JumpToCode.server;
 
-import com.intellij.ide.plugins.IdeaPluginDescriptor;
-import com.intellij.ide.plugins.PluginManager;
 import org.apache.log4j.Logger;
 import org.mortbay.jetty.Connector;
 import org.mortbay.jetty.Server;
@@ -36,13 +34,6 @@ public class HttpServer {
   private String version = "";
 
   private HttpServer() {
-    final IdeaPluginDescriptor[] plugins = PluginManager.getPlugins();
-    for (IdeaPluginDescriptor pd: plugins){
-      System.out.println(pd.getPluginId().getIdString());
-      if (pd.getPluginId().getIdString().equalsIgnoreCase("pl.otros.intellij.JumpToCode")){
-        version = pd.getVersion();
-      }
-    }
   }
 
   public static HttpServer getInstance() {
