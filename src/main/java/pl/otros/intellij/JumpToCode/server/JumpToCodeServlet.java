@@ -76,7 +76,7 @@ public class JumpToCodeServlet extends HttpServlet {
     response.addHeader("plugin-version", version);
     response.addHeader("plugin-features", pluginFeatures);
     String operation = getParameter(request, "operation", "o", "form");
-    if (operation.equals("form")) {
+    if ("form".equals(operation)) {
       response.setContentType("text/html");
       form(response);
       return;
