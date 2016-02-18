@@ -120,7 +120,9 @@ public class OtrosJumpToCodeApplicationComponent implements ApplicationComponent
     HttpServer.getInstance().configure(config);
   }
 
+  @Override
   public void disposeComponent() {
+    //Nothing to do
   }
 
   @NotNull
