@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package pl.otros.intellij.JumpToCode.server;
+package pl.otros.intellij.jumptocode.server;
 
 import org.apache.log4j.Logger;
 import org.mortbay.jetty.Connector;
@@ -22,7 +22,7 @@ import org.mortbay.jetty.Server;
 import org.mortbay.jetty.bio.SocketConnector;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
-import pl.otros.intellij.JumpToCode.logic.ServerConfig;
+import pl.otros.intellij.jumptocode.logic.ServerConfig;
 
 /**
  */
@@ -31,6 +31,7 @@ public class HttpServer {
   private static HttpServer instance = new HttpServer();
   private final Logger logger = Logger.getLogger(this.getClass());
   private Server server;
+  private String version = "";
 
   private HttpServer() {
   }
@@ -69,7 +70,7 @@ public class HttpServer {
     connector.setHost(config.getHostName());
     server.setConnectors(new Connector[]{connector});
     Context root = new Context(server, "/", Context.NO_SESSIONS);
-    root.addServlet(new ServletHolder(new JumpToCodeServlet()), "/*");
+    root.addServlet(new ServletHolder(new JumpToCodeServlet(version)), "/*");
     server.setStopAtShutdown(true);
     try {
       server.start();
@@ -81,5 +82,5 @@ public class HttpServer {
       logger.error("failed to start JumpToCode HTTP server", e);
     }
   }
-
 }
+

@@ -1,0 +1,42 @@
+sleep 0.3;http http://localhost:15987/ o==jump c==pl.otros.logview.gui.LogViewMainFrame m=="Unknown search mode <Random String>"
+sleep 0.3;http http://localhost:15987/ o==jump c==pl.otros.logview.gui.LogViewMainFrame m=="Can't load version of running OLV"
+sleep 0.3;http http://localhost:15987/ o==jump c==pl.otros.logview.gui.LogViewMainFrame m=="Problem with loading automatic markers, filter or log importers: "
+sleep 0.3;http http://localhost:15987/ o==jump c==pl.otros.logview.gui.LogViewMainFrame m=="OtrosLogViewer is already running, params send using requestAction"
+sleep 0.3;http http://localhost:15987/ o==jump c==pl.otros.logview.gui.LogViewMainFrame m=="Starting application"
+sleep 0.3;http http://localhost:15987/ o==jump c==pl.otros.logview.gui.LogViewMainFrame m=="Initializing look and feel: "
+sleep 0.3;http http://localhost:15987/ o==jump c==pl.otros.logview.gui.LogViewMainFrame m=="Cannot initialize main frame"
+sleep 0.3;http http://localhost:15987/ o==jump c==pl.otros.logview.gui.LogViewMainFrame m=="Loading common configuration from "
+sleep 0.3;http http://localhost:15987/ o==jump c==pl.otros.logview.gui.LogViewMainFrame m=="Can't load configuration, creating new "
+sleep 0.3;http http://localhost:15987/ o==jump c==pl.otros.logview.gui.LogViewMainFrame m=="Common configuration file do not exist"
+sleep 0.3;http http://localhost:15987/ o==jump c==pl.otros.logview.gui.LogViewMainFrame m=="Creating user specific OtrosLogViewer configuration directory "
+sleep 0.3;http http://localhost:15987/ o==jump c==pl.otros.logview.gui.LogViewMainFrame m=="Can't load user configuration from %s: %s"
+sleep 0.3;http http://localhost:15987/ o==jump c==pl.otros.logview.gui.LogViewMainFrame m=="Can't load user configuration from %s: %s"
+sleep 0.3;http http://localhost:15987/ o==jump c==pl.otros.logview.gui.LogViewMainFrame m=="Loading plugins"
+sleep 0.3;http http://localhost:15987/ o==jump c==pl.otros.logview.gui.LogViewMainFrame m=="Can't initialize plugins "
+sleep 0.3;http http://localhost:15987/ o==jump c==pl.otros.logview.gui.LogViewMainFrame m=="Can't update search highlight"
+sleep 0.3;http http://localhost:15987/ o==jump c==pl.otros.logview.gui.LogViewMainFrame m=="Error: "
+
+sleep 0.3;http http://localhost:15987/ o==jump p==pl.otros.logview.gui f==LogViewMainFrame.java l==120
+sleep 0.3;http http://localhost:15987/ o==jump p==pl.otros.logview.gui f==LogViewMainFrame.java l==121
+sleep 0.3;http http://localhost:15987/ o==jump p==pl.otros.logview.gui f==LogViewMainFrame.java l==122
+sleep 0.3;http http://localhost:15987/ o==jump p==pl.otros.logview.gui f==LogViewMainFrame.java l==123
+
+
+
+sleep 0.3;http http://localhost:15987/ o==content c==pl.otros.logview.gui.LogViewMainFrame m=="Loading plugins"
+sleep 0.3;http http://localhost:15987/ o==content c==pl.otros.logview.gui.LogViewMainFrame m=="Can't initialize plugins "
+sleep 0.3;http http://localhost:15987/ o==content c==pl.otros.logview.gui.LogViewMainFrame m=="Can't update search highlight"
+sleep 0.3;http http://localhost:15987/ o==content c==pl.otros.logview.gui.LogViewMainFrame m=="Error: "
+
+sleep 0.3;http http://localhost:15987/ o==content c==test.sampleapp.SampleApp m=="Sending response, processing have taken "
+
+sleep 0.3;http http://localhost:15987/ o==content p==pl.otros.logview.gui f==LogViewMainFrame.java l==120
+sleep 0.3;http http://localhost:15987/ o==content p==pl.otros.logview.gui f==LogViewMainFrame.java l==121
+
+
+
+sleep 0.3;http http://localhost:15987/ o==content c==test.sampleapp.SampleApp m=="Sending response, processing have taken "
+sleep 0.3;http http://localhost:15987/ o==jump c==test.sampleapp.SampleApp m=="Sending response, processing have taken "
+sleep 0.3;http http://localhost:15987/ o==content c==test.sampleapp.SampleApp m=="Error on serving request"
+sleep 0.3;http http://localhost:15987/ o==jump p==test.sampleapp f==SampleApp.java l==20
+

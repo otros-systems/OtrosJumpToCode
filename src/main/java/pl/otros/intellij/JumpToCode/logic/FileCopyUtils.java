@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package pl.otros.intellij.JumpToCode.logic;
+package pl.otros.intellij.jumptocode.logic;
 
-import org.apache.log4j.Logger;
-import pl.otros.intellij.JumpToCode.IOUtils;
+import pl.otros.intellij.jumptocode.IOUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,8 +31,6 @@ import java.io.OutputStream;
 public abstract class FileCopyUtils {
 
   public static final int BUFFER_SIZE = 4096;
-  private static final Logger logger = Logger.getLogger(FileCopyUtils.class);
-
   //---------------------------------------------------------------------
   // Copy methods for java.io.InputStream / java.io.OutputStream
   //---------------------------------------------------------------------

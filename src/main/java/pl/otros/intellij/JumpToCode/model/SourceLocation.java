@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package pl.otros.intellij.JumpToCode.model;
+package pl.otros.intellij.jumptocode.model;
 
 import com.intellij.openapi.util.text.StringUtil;
 
 /**
  */
-public class SourceLocation {
+public class SourceLocation implements JumpLocation {
 
   private String packageName;
 
@@ -28,22 +28,11 @@ public class SourceLocation {
 
   private int lineNumber;
 
-  /**
-   * in which project to search (not yet used)
-   */
-  private String project;
 
-  /**
-   * in which module to search (not yet used)
-   */
-  private String module;
-
-  public SourceLocation(String packageName, String fileName, int lineNumber, String project, String module) {
+  public SourceLocation(String packageName, String fileName, int lineNumber) {
     this.packageName = packageName;
     this.fileName = fileName;
     this.lineNumber = lineNumber;
-    this.project = project;
-    this.module = module;
   }
 
   /**
@@ -64,8 +53,6 @@ public class SourceLocation {
       this.fileName = fileName + ".java";
     }
     this.lineNumber = -1;
-    this.project = "";
-    this.module = "";
   }
 
   public int getLineNumber() {
@@ -83,14 +70,6 @@ public class SourceLocation {
 
   public String getFileName() {
     return fileName;
-  }
-
-  public String getProject() {
-    return project;
-  }
-
-  public String getModule() {
-    return module;
   }
 
 }

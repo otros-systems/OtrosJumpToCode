@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package pl.otros.intellij.JumpToCode.logic;
+package pl.otros.intellij.jumptocode.logic;
 
 import com.intellij.ide.plugins.PluginManager;
 import com.intellij.openapi.actionSystem.ActionManager;
@@ -28,7 +28,7 @@ import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import pl.otros.intellij.JumpToCode.server.HttpServer;
+import pl.otros.intellij.jumptocode.server.HttpServer;
 
 import javax.swing.*;
 
@@ -39,7 +39,7 @@ import javax.swing.*;
 public class OtrosJumpToCodeApplicationComponent implements ApplicationComponent, Configurable,
     PersistentStateComponent<Config> {
 
-  static final com.intellij.openapi.diagnostic.Logger LOGGER = PluginManager.getLogger();
+  public static final com.intellij.openapi.diagnostic.Logger LOGGER = PluginManager.getLogger();
 
   private Config config = new Config();
 
@@ -50,7 +50,6 @@ public class OtrosJumpToCodeApplicationComponent implements ApplicationComponent
     ToggleAction toggleAction = new ToggleAction("OtrosJumpToCode: Enable") {
 
 
-
       @Override
       public boolean isSelected(AnActionEvent anActionEvent) {
         return config.isEnabled();
@@ -58,14 +57,14 @@ public class OtrosJumpToCodeApplicationComponent implements ApplicationComponent
 
       @Override
       public void setSelected(AnActionEvent anActionEvent, boolean b) {
-        LOGGER.info("Setting enabled OtrosJumpToCode: "+ b);
+        LOGGER.info("Setting enabled OtrosJumpToCode: " + b);
         config.setEnabled(b);
         HttpServer.getInstance().configure(config);
 
       }
 
       @Override
-      public void update(AnActionEvent e) {
+      public void update(@NotNull AnActionEvent e) {
         super.update(e);
         final boolean selected = this.isSelected(e);
         LOGGER.info("Updating, selected: " + selected);
@@ -73,7 +72,7 @@ public class OtrosJumpToCodeApplicationComponent implements ApplicationComponent
       }
     };
 
-    ActionManager.getInstance().registerAction("OtrosJumpToCode-toggle",toggleAction);
+    ActionManager.getInstance().registerAction("OtrosJumpToCode-toggle", toggleAction);
   }
 
   @Nls
@@ -121,7 +120,9 @@ public class OtrosJumpToCodeApplicationComponent implements ApplicationComponent
     HttpServer.getInstance().configure(config);
   }
 
+  @Override
   public void disposeComponent() {
+    //Nothing to do
   }
 
   @NotNull
