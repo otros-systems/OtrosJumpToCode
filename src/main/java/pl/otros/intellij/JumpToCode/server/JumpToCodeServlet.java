@@ -108,12 +108,7 @@ public class JumpToCodeServlet extends HttpServlet {
   private void jump(HttpServletRequest request, HttpServletResponse response, boolean test) throws IOException {
     final LocationInfo locationInfo = LocationInfo.parse(request);
     final List<JumpLocation> locations = FileUtils.findLocation(locationInfo);
-    final Function<String, String> function = new Function<String, String>() {
-      @Override
-      public String apply(String s) {
-        return StringUtils.substring(s, 0, 30);
-      }
-    };
+
     if (locations.isEmpty()) {
       response.sendError(HttpServletResponse.SC_NOT_FOUND, "Class not found");
       return;

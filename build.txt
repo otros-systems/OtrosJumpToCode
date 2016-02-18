@@ -1,0 +1,5 @@
+https://github.com/JetBrains/gradle-intellij-plugin
+https://github.com/sonar-intellij-plugin/sonar-intellij-plugin/blob/master/build.gradle -> plugin intellij
+https://github.com/dkandalov/live-plugin/blob/master/build.gradle
+
+

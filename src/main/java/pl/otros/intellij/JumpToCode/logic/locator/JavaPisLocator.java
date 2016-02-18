@@ -24,8 +24,6 @@ import java.util.List;
 
 public class JavaPisLocator implements Locator {
 
-  private static final int READ_LIMIT = 100 * 1000;
-
   @Override
   public List<PsiModelLocation> findLocation(LocationInfo locationInfo) {
     if (locationInfo.clazz.isPresent() && locationInfo.msg.isPresent()) {
