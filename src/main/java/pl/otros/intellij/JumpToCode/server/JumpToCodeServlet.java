@@ -16,7 +16,6 @@
 
 package pl.otros.intellij.jumptocode.server;
 
-import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import org.apache.commons.lang.StringUtils;
 import pl.otros.intellij.jumptocode.logic.FileCopyUtils;
