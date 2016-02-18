@@ -1,5 +1,5 @@
 <idea-plugin version="2">
-    <id>pl.otros.intellij.JumpToCode</id>
+    <id>pl.otros.intellij.jumptocode</id>
     <name>OtrosJumpToCode</name>
     <version>1.4</version>
     <vendor email="otros.systems+jumpToCode@gmail.com" url="http://code.google.com/p/otroslogviewer/">Otros Systems
@@ -51,7 +51,7 @@
     <application-components>
         <!-- Add your application components here -->
         <component>
-            <implementation-class>pl.otros.intellij.JumpToCode.logic.OtrosJumpToCodeApplicationComponent
+            <implementation-class>pl.otros.intellij.jumptocode.logic.OtrosJumpToCodeApplicationComponent
             </implementation-class>
         </component>
     </application-components>
@@ -66,6 +66,6 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <!-- Add your extensions here -->
-        <editorNotificationProvider implementation="pl.otros.intellij.JumpToCode.gui.DonateNotificationProvider"/>
+        <editorNotificationProvider implementation="pl.otros.intellij.jumptocode.gui.DonateNotificationProvider"/>
     </extensions>
 </idea-plugin>
