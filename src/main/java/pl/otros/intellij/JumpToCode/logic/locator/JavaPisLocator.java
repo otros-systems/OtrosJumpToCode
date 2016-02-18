@@ -71,12 +71,14 @@ public class JavaPisLocator implements Locator {
           final String[] lines = toDisplay.split("\n");
           final StringBuilder sb = new StringBuilder();
           sb.append("\nPath: ").append(((PsiModelLocation) location).getContainingFile().getVirtualFile().getCanonicalPath()).append("\n");
-          if (lines.length > 10) {
-            for (int i = 0; i < 4; i++) {
+          int maxLines = 15;
+          if (lines.length > maxLines) {
+            int header = 4;
+            for (int i = 0; i < header; i++) {
               sb.append(lines[i]).append("\n");
             }
             sb.append(".......\n.......\n");
-            for (int i = lines.length - 5; i < lines.length - 1; i++) {
+            for (int i = lines.length - maxLines+header+2; i < lines.length - 1; i++) {
               sb.append(lines[i]).append("\n");
             }
           } else {
