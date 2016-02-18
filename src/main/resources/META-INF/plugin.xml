@@ -1,7 +1,7 @@
 <idea-plugin version="2">
     <id>pl.otros.intellij.JumpToCode</id>
     <name>OtrosJumpToCode</name>
-    <version>1.2</version>
+    <version>1.4</version>
     <vendor email="otros.systems+jumpToCode@gmail.com" url="http://code.google.com/p/otroslogviewer/">Otros Systems
     </vendor>
 
@@ -28,7 +28,13 @@
       Counting jumps count<BR/>
       <BR>
       <B>Version 1.4</B><BR/>
-      Jump to code or get content based on logger and log message.
+      Jump to code or get content based on logger and log message. Supported jumps:<BR/>
+      <UL>
+        <LI>Logger.info("MessageString")</LI>
+        <LI>Logger.info("MessageString" + args)</LI>
+        <LI>Logger.info("MessageString", args)</LI>
+      </UL>
+
       <BR/>
             ]]>
     </change-notes>
