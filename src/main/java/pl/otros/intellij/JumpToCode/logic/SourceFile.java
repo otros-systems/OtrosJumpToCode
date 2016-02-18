@@ -4,7 +4,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 
 public class SourceFile {
-  VirtualFile virtualFile;
+  private VirtualFile virtualFile;
   private Project project;
 
   public SourceFile(Project project, VirtualFile virtualFile) {

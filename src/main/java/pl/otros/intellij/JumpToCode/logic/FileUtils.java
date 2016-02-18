@@ -55,7 +55,6 @@ import java.util.concurrent.ScheduledExecutorService;
 public class FileUtils {
   private final static Logger logger = Logger.getLogger(FileUtils.class);
 
-
   static final ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
 
   private static SourceFileFinder sourceFileFinder = new SourceFileFinder();

@@ -66,13 +66,13 @@ public class JumpToCodeConfigurationForm {
 
   @SuppressWarnings({"RedundantIfStatement"})
   public boolean isModified(Config data) {
-    if (portField.getText() != null ? !portField.getText().equals(data.getPort()) : data.getPort() != null)
+    if (portField.getText() != null ? !portField.getText().equals(data.getPort()) : data.getPort() != null) {
       return true;
-    if (enabledCheckBox.isSelected() != data.isEnabled())
+    }
+    if (enabledCheckBox.isSelected() != data.isEnabled()){
       return true;
-    if (hostnameField.getText() != null ? !hostnameField.getText().equals(data.getHostName()) : data.getHostName() != null)
-      return true;
-    return false;
+    }
+    return hostnameField.getText() != null ? !hostnameField.getText().equals(data.getHostName()) : data.getHostName() != null;
   }
 
 
