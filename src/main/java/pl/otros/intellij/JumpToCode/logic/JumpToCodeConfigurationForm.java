@@ -69,7 +69,7 @@ public class JumpToCodeConfigurationForm {
     if (portField.getText() != null ? !portField.getText().equals(data.getPort()) : data.getPort() != null) {
       return true;
     }
-    if (enabledCheckBox.isSelected() != data.isEnabled()){
+    if (enabledCheckBox.isSelected() != data.isEnabled()) {
       return true;
     }
     return hostnameField.getText() != null ? !hostnameField.getText().equals(data.getHostName()) : data.getHostName() != null;
