@@ -1,7 +1,7 @@
 <idea-plugin version="2">
     <id>pl.otros.intellij.JumpToCode</id>
     <name>OtrosJumpToCode</name>
-    <version>1.4</version>
+    <version>1.5</version>
     <vendor email="otros.systems+jumpToCode@gmail.com" url="https://github.com/otros-systems/OtrosJumpToCode">Otros Systems
     </vendor>
 
@@ -34,8 +34,14 @@
         <LI>Logger.info("MessageString" + args)</LI>
         <LI>Logger.info("MessageString", args)</LI>
       </UL>
-
       <BR/>
+      <B>Version 1.5</B><BR/>
+      Jump to code or get content based on logger and log message. Supported jumps:<BR/>
+      <UL>
+        <LI>LOGGER.trace("message with arg {}", arg);</LI>
+        <LI>LOGGER.trace(String.format("Message with %d and %d.",arg1, arg2));</LI>
+        <LI>LOGGER.warn("message with arg \"escaped\"");</LI>
+      </UL>
             ]]>
     </change-notes>
 
