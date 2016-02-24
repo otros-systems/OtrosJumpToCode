@@ -47,7 +47,7 @@ public class JumpToCodeServlet extends HttpServlet {
 
   public static final Logger LOGGER = PluginManager.getLogger();
 
-  final List<Locator> buildInLocators = Arrays.asList(new JavaPisLocator(), new JavaFileWithLineLocator());
+  private final List<Locator> buildInLocators = Arrays.asList(new JavaPisLocator(), new JavaFileWithLineLocator());
   private String version;
   private String pluginFeatures = Joiner.on(",").join(
       "jumpByLine",

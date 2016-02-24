@@ -212,7 +212,6 @@ public class JavaPisLocator implements Locator {
     if (lines.length <= max || lines.length<10) {
       return lines;
     } else {
-      final ArrayList<String> strings = new ArrayList<String>();
       String[] result = new String[max];
       System.arraycopy(lines,0,result,0,header);
       String spaces = StringUtils.getCommonPrefix(new String[]{"                        ",lines[header-1]});
