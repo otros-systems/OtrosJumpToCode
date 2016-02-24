@@ -32,8 +32,6 @@ import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.search.PsiShortNamesCache;
 import pl.otros.intellij.jumptocode.Properties;
 import pl.otros.intellij.jumptocode.gui.SwingUtils;
-import pl.otros.intellij.jumptocode.logic.locator.JavaFileWithLineLocator;
-import pl.otros.intellij.jumptocode.logic.locator.JavaPisLocator;
 import pl.otros.intellij.jumptocode.logic.locator.LocationInfo;
 import pl.otros.intellij.jumptocode.logic.locator.Locator;
 import pl.otros.intellij.jumptocode.model.JumpLocation;
@@ -43,7 +41,6 @@ import pl.otros.intellij.jumptocode.model.SourceLocation;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -54,12 +51,17 @@ public class FileUtils {
 
   public static final ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
 
-  private static SourceFileFinder sourceFileFinder = new SourceFileFinder();
+  private SourceFileFinder sourceFileFinder = new SourceFileFinder();
 
-  private static List<? extends Locator> locators = Arrays.asList(new JavaPisLocator(), new JavaFileWithLineLocator());
+  private final List<? extends Locator> locators;
 
+  public FileUtils(List<? extends Locator> locators) {
+    this.sourceFileFinder = new SourceFileFinder();
+    this.locators = locators;
+  }
 
-  public static List<JumpLocation> findLocation(LocationInfo locationInfo) {
+  public List<JumpLocation> findLocation(LocationInfo locationInfo) {
+
     final ArrayList<JumpLocation> jumpLocations = new ArrayList<JumpLocation>();
     for (Locator l : locators) {
       jumpLocations.addAll(l.findLocation(locationInfo));
@@ -68,7 +70,7 @@ public class FileUtils {
   }
 
 
-  public static List<String> getContent(LocationInfo locationInfo) {
+  public List<String> getContent(LocationInfo locationInfo) {
     final ArrayList<String> r = new ArrayList<String>();
     for (Locator l : locators) {
       r.addAll(l.getContent(locationInfo));
@@ -83,7 +85,7 @@ public class FileUtils {
    * @param location the source location to search for
    * @return true if jump was successful
    */
-  public static boolean jumpToLocation(SourceLocation location) {
+  public boolean jumpToLocation(SourceLocation location) {
     List<SourceFile> files = sourceFileFinder.findSourceFiles(location);
     boolean result = false;
     final int lineNumber = location.getLineNumber() - 1;
@@ -101,7 +103,7 @@ public class FileUtils {
     return result;
   }
 
-  public static boolean jumpToLocation(PsiFile psiFile, int offset, int length) {
+  public boolean jumpToLocation(PsiFile psiFile, int offset, int length) {
     final FileEditorManager fem = FileEditorManager.getInstance(psiFile.getProject());
     final OpenFileDescriptor openFileDescriptor = new OpenFileDescriptor(psiFile.getProject(), psiFile.getVirtualFile(), offset);
     final ToRangeCodeJumper codeJumper = new ToRangeCodeJumper(fem, openFileDescriptor, offset, length);
@@ -115,7 +117,7 @@ public class FileUtils {
   }
 
 
-  public static String findWholeClass(String clazz) {
+  public String findWholeClass(String clazz) {
     final PsiShortNamesCache instance = PsiShortNamesCache.getInstance(ProjectManager.getInstance().getDefaultProject());
     ProjectManager projectManager = ProjectManager.getInstance();
     Project[] projects = projectManager.getOpenProjects();
@@ -156,7 +158,7 @@ public class FileUtils {
   }
 
 
-  private static String readVirtualFile(VirtualFile virtualFile) {
+  private String readVirtualFile(VirtualFile virtualFile) {
     try {
       return new String(ByteStreams.toByteArray(virtualFile.getInputStream()), Charset.forName("UTF-8"));
     } catch (IOException e) {
@@ -165,7 +167,7 @@ public class FileUtils {
     return "";
   }
 
-  public static boolean jumpToLocation(List<JumpLocation> locations) {
+  public boolean jumpToLocation(List<JumpLocation> locations) {
     for (JumpLocation location : locations) {
       if (location instanceof PsiModelLocation) {
         PsiModelLocation l = (PsiModelLocation) location;

@@ -74,4 +74,8 @@
         <!-- Add your extensions here -->
         <editorNotificationProvider implementation="pl.otros.intellij.jumptocode.gui.DonateNotificationProvider"/>
     </extensions>
+
+    <extensionPoints>
+        <extensionPoint name="locatorProvider" interface="pl.otros.intellij.jumptocode.extension.LocatorProvider"/>
+    </extensionPoints>
 </idea-plugin>
