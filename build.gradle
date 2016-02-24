@@ -23,7 +23,7 @@ dependencies {
     compile 'com.google.guava:guava:19.0'
     compile 'org.mortbay.jetty:jetty:6.1.26'
     compile 'org.mortbay.jetty:jetty-util:6.1.26'
-    compile 'javax.servlet:servlet-api:2.5'
+    runtime 'javax.servlet:servlet-api:2.5'
 
 
     testCompile 'junit:junit:4.12'
