@@ -21,6 +21,8 @@ import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.ToggleAction;
 import com.intellij.openapi.components.*;
+import com.intellij.openapi.extensions.ExtensionPointName;
+import com.intellij.openapi.extensions.Extensions;
 import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.util.xmlb.XmlSerializerUtil;
@@ -28,6 +30,7 @@ import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import pl.otros.intellij.jumptocode.extension.LocatorProvider;
 import pl.otros.intellij.jumptocode.server.HttpServer;
 
 import javax.swing.*;
@@ -73,6 +76,11 @@ public class OtrosJumpToCodeApplicationComponent implements ApplicationComponent
     };
 
     ActionManager.getInstance().registerAction("OtrosJumpToCode-toggle", toggleAction);
+    final ExtensionPointName<String> stringExtensionPointName = new ExtensionPointName<String>("");
+
+
+//    final Object[] extensions = Extensions.getExtensions("pl.otros.intellij,jumptocode.extension.LocatorProvider");
+
   }
 
   @Nls
