@@ -16,7 +16,15 @@ repositories {
 version = '1.5'
 
 intellij {
+
     version 'IC-143.1184.17'
+
+    publish {
+        pluginId '7406'
+        username 'Krzysztof'
+        def intellijPassword = System.getenv("INTELLIJ_PASSWORD")
+        password = intellijPassword ? intellijPassword : ''
+    }
 }
 
 dependencies {
