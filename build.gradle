@@ -1,0 +1,30 @@
+plugins {
+    id "org.jetbrains.intellij" version "0.0.40"
+}
+
+apply plugin: 'org.jetbrains.intellij'
+apply plugin: 'java'
+apply plugin: 'idea'
+
+targetCompatibility = 1.6
+sourceCompatibility = 1.6
+
+repositories {
+    mavenCentral()
+}
+
+version = '1.5'
+
+intellij {
+    version 'IC-143.1184.17'
+}
+
+dependencies {
+    compile 'com.google.guava:guava:19.0'
+    compile 'org.mortbay.jetty:jetty:6.1.26'
+    compile 'org.mortbay.jetty:jetty-util:6.1.26'
+
+
+    testCompile 'junit:junit:4.12'
+}
+
