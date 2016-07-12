@@ -62,8 +62,9 @@ public class HttpServer {
     }
   }
 
+  //TOOD return result
   private void start(ServerConfig config) {
-    logger.debug("starting HttpServer");
+    logger.debug("starting HttpServer with config " + config);
     server = new Server();
     Connector connector = new SocketConnector();
     connector.setPort(config.getPortNumber());

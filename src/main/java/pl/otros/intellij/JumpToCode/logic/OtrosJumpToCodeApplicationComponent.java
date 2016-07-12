@@ -20,32 +20,19 @@ import com.intellij.ide.plugins.PluginManager;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.ToggleAction;
-import com.intellij.openapi.components.*;
-import com.intellij.openapi.options.Configurable;
-import com.intellij.openapi.options.ConfigurationException;
-import com.intellij.util.xmlb.XmlSerializerUtil;
-import org.jetbrains.annotations.Nls;
-import org.jetbrains.annotations.NonNls;
+import com.intellij.openapi.components.ApplicationComponent;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import pl.otros.intellij.jumptocode.server.HttpServer;
 
-import javax.swing.*;
 
-@State(
-    name = "OtrosJumpToCodeApplicationComponent",
-    storages = {@Storage(id = "OtrosJumpToCode", file = StoragePathMacros.APP_CONFIG + "/OtrosJumpToCode.xml")}
-)
-public class OtrosJumpToCodeApplicationComponent implements ApplicationComponent, Configurable,
-    PersistentStateComponent<Config> {
+public class OtrosJumpToCodeApplicationComponent implements ApplicationComponent {
 
   public static final com.intellij.openapi.diagnostic.Logger LOGGER = PluginManager.getLogger();
 
-  private Config config = new Config();
-
-  private JumpToCodeConfigurationForm form;
 
   public OtrosJumpToCodeApplicationComponent() {
+    final OtrosJumpToCodeSettings instance = OtrosJumpToCodeSettings.getInstance();
+    final Config config = instance.getState();
     LOGGER.debug("constructed OtrosJumpToCodeApplicationComponent");
     ToggleAction toggleAction = new ToggleAction("OtrosJumpToCode: Enable") {
 
@@ -75,49 +62,10 @@ public class OtrosJumpToCodeApplicationComponent implements ApplicationComponent
     ActionManager.getInstance().registerAction("OtrosJumpToCode-toggle", toggleAction);
   }
 
-  @Nls
-  public String getDisplayName() {
-    return "OtrosJumpToCode";
-  }
-
-
-  @Nullable
-  @NonNls
-  public String getHelpTopic() {
-    return null;
-  }
-
-  public JComponent createComponent() {
-    if (form == null) {
-      form = new JumpToCodeConfigurationForm();
-    }
-    return form.getRootComponent();
-  }
-
-  public boolean isModified() {
-    return form != null && form.isModified(this.config);
-  }
-
-  public void apply() throws ConfigurationException {
-    if (form != null) {
-      form.getData(config);
-      HttpServer.getInstance().configure(config);
-    }
-  }
-
-  public void reset() {
-    if (form != null) {
-      form.setData(this.config);
-    }
-  }
-
-  public void disposeUIResources() {
-    form = null;
-  }
-
+  @Override
   public void initComponent() {
     LOGGER.debug("OtrosJumpToCodeApplicationComponent.initComponent");
-    HttpServer.getInstance().configure(config);
+    HttpServer.getInstance().configure(OtrosJumpToCodeSettings.getInstance().getState());
   }
 
   @Override
@@ -128,15 +76,6 @@ public class OtrosJumpToCodeApplicationComponent implements ApplicationComponent
   @NotNull
   public String getComponentName() {
     return "OtrosJumpToCodeApplicationComponent";
-  }
-
-  public Config getState() {
-    return config;
-  }
-
-  public void loadState(Config state) {
-    XmlSerializerUtil.copyBean(state, config);
-    LOGGER.debug("loadState: config.enabled= " + state.isEnabled());
   }
 
 }

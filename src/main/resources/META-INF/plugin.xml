@@ -42,11 +42,14 @@
         <LI>LOGGER.trace(String.format("Message with %d and %d.",arg1, arg2));</LI>
         <LI>LOGGER.warn("message with arg \"escaped\"");</LI>
       </UL>
+      <BR/>
+      <B>Version 1.6</B></BR>
+      Fix configuration panel
             ]]>
     </change-notes>
 
     <!-- please see http://confluence.jetbrains.net/display/IDEADEV/Build+Number+Ranges for description -->
-    <idea-version since-build="107.105"/>
+    <idea-version since-build="123.72"/>
 
     <!-- please see http://confluence.jetbrains.net/display/IDEADEV/Plugin+Compatibility+with+IntelliJ+Platform+Products
          on how to target different products -->
@@ -62,10 +65,6 @@
         </component>
     </application-components>
 
-    <project-components>
-        <!-- Add your project components here -->
-    </project-components>
-
     <actions>
         <!-- Add your actions here -->
     </actions>
@@ -73,6 +72,8 @@
     <extensions defaultExtensionNs="com.intellij">
         <!-- Add your extensions here -->
         <editorNotificationProvider implementation="pl.otros.intellij.jumptocode.gui.DonateNotificationProvider"/>
+        <applicationConfigurable instance="pl.otros.intellij.jumptocode.logic.OtrosJumpToCodeSettings"/>
+        <applicationService serviceImplementation="pl.otros.intellij.jumptocode.logic.OtrosJumpToCodeSettings"/>
     </extensions>
 
     <extensionPoints>

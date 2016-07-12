@@ -18,11 +18,26 @@ package pl.otros.intellij.jumptocode.logic;
 
 /**
  */
-public class Config implements ServerConfig {
+class Config implements ServerConfig {
 
+  private static Config instance;
   private String hostName = "127.0.0.1";
   private int port = 5987;
   private boolean enabled = true;
+
+  private Config() {
+  }
+
+  public static Config getInstance() {
+    if (instance == null) {
+      synchronized (Config.class) {
+        if (instance == null) {
+          instance = new Config();
+        }
+      }
+    }
+    return instance;
+  }
 
   public String getHostName() {
     return hostName;
@@ -55,5 +70,14 @@ public class Config implements ServerConfig {
       pl.otros.intellij.jumptocode.logic.OtrosJumpToCodeApplicationComponent.LOGGER.info("user entered invalid port number: " + port);
       // TODO: show error dialog
     }
+  }
+
+  @Override
+  public String toString() {
+    return "Config{" +
+        "hostName='" + hostName + '\'' +
+        ", port=" + port +
+        ", enabled=" + enabled +
+        '}';
   }
 }
