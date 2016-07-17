@@ -41,6 +41,11 @@ public class JavaFileWithLineLocator implements Locator {
     return result;
   }
 
+  @Override
+  public String name() {
+    return "Java by file name and line [stacktrace]";
+  }
+
 
   protected List<String> getContentByLine(SourceLocation location) {
     List<SourceFile> files = sourceFileFinder.findSourceFiles(location);

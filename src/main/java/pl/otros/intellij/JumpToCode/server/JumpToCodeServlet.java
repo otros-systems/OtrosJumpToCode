@@ -47,7 +47,7 @@ public class JumpToCodeServlet extends HttpServlet {
 
   public static final Logger LOGGER = PluginManager.getLogger();
 
-  private final List<Locator> buildInLocators = Arrays.asList(new JavaPisLocator(), new JavaFileWithLineLocator());
+  public static final List<Locator> buildInLocators = Arrays.asList(new JavaPisLocator(), new JavaFileWithLineLocator());
   private String version;
   private String pluginFeatures = Joiner.on(",").join(
       "jumpByLine",
@@ -59,6 +59,19 @@ public class JumpToCodeServlet extends HttpServlet {
 
   public JumpToCodeServlet(String version) {
     this.version = version;
+  }
+
+  private static String getParameter(HttpServletRequest request, String shortName, String longName) {
+    String value = request.getParameter(longName);
+    if (value == null) {
+      value = request.getParameter(shortName);
+    }
+    return StringUtils.defaultString(value, "");
+  }
+
+  private static String getParameter(HttpServletRequest request, String shortName, String longName, String defaultValue) {
+    String value = getParameter(request, shortName, longName);
+    return (value != null) ? value : defaultValue;
   }
 
   public List<Locator> getInternalLocaotrs(){
@@ -89,20 +102,6 @@ public class JumpToCodeServlet extends HttpServlet {
       }
     }
     return r;
-  }
-
-
-  private static String getParameter(HttpServletRequest request, String shortName, String longName) {
-    String value = request.getParameter(longName);
-    if (value == null) {
-      value = request.getParameter(shortName);
-    }
-    return StringUtils.defaultString(value, "");
-  }
-
-  private static String getParameter(HttpServletRequest request, String shortName, String longName, String defaultValue) {
-    String value = getParameter(request, shortName, longName);
-    return (value != null) ? value : defaultValue;
   }
 
   protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

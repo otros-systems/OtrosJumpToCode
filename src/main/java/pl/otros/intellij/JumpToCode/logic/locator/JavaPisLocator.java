@@ -24,6 +24,39 @@ import java.util.*;
 
 public class JavaPisLocator implements Locator {
 
+  private static List<PsiLiteralExpression> literalExpression(PsiExpression[] expressions) {
+    List<PsiLiteralExpression> r = new ArrayList<PsiLiteralExpression>();
+    for (PsiExpression e : expressions) {
+      if (e instanceof PsiMethodCallExpression) {
+        final PsiExpressionList argumentList = ((PsiMethodCallExpression) e).getArgumentList();
+        r.addAll(literalExpression(argumentList.getExpressions()));
+      } else if (e instanceof PsiLiteralExpression) {
+        r.add((PsiLiteralExpression) e);
+      } else if (e instanceof PsiBinaryExpression) {
+        //logger.info("message",param);
+        PsiBinaryExpression be = (PsiBinaryExpression) e;
+        r.addAll(literalExpression(be.getOperands()));
+      } else if (e instanceof PsiPolyadicExpression) {
+        //logger.info("String " + something + " something")
+        r.addAll(literalExpression(((PsiPolyadicExpression) e).getOperands()));
+      }
+    }
+    return r;
+  }
+
+  public static Optional<PsiElement> extractParent(PsiElement psiElement) {
+    final PsiElement parent = psiElement.getParent();
+    if (parent != null) {
+      if (parent instanceof PsiMethodImpl || parent instanceof PsiClassImpl) {
+        return Optional.of(parent);
+      } else {
+        return extractParent(parent);
+      }
+    } else {
+      return Optional.absent();
+    }
+  }
+
   @Override
   public List<PsiModelLocation> findLocation(LocationInfo locationInfo) {
     if (locationInfo.clazz.isPresent() && locationInfo.msg.isPresent()) {
@@ -40,6 +73,10 @@ public class JavaPisLocator implements Locator {
     return Collections.emptyList();
   }
 
+  @Override
+  public String name() {
+    return "Java by logger and log message";
+  }
 
   public List<String> getContentByMessage(final String fqcn, final String code) {
     final ArrayList<String> list = new ArrayList<String>();
@@ -153,26 +190,6 @@ public class JavaPisLocator implements Locator {
     return jumpLocations;
   }
 
-  private static List<PsiLiteralExpression> literalExpression(PsiExpression[] expressions) {
-    List<PsiLiteralExpression> r = new ArrayList<PsiLiteralExpression>();
-    for (PsiExpression e : expressions) {
-      if (e instanceof PsiMethodCallExpression){
-        final PsiExpressionList argumentList = ((PsiMethodCallExpression) e).getArgumentList();
-        r.addAll(literalExpression(argumentList.getExpressions()));
-      }else if (e instanceof PsiLiteralExpression) {
-        r.add((PsiLiteralExpression) e);
-      } else if (e instanceof PsiBinaryExpression) {
-        //logger.info("message",param);
-        PsiBinaryExpression be = (PsiBinaryExpression) e;
-        r.addAll(literalExpression(be.getOperands()));
-      } else if (e instanceof PsiPolyadicExpression) {
-        //logger.info("String " + something + " something")
-        r.addAll(literalExpression(((PsiPolyadicExpression) e).getOperands()));
-      }
-    }
-    return r;
-  }
-
   protected String unwrap(String text) {
     if (text.startsWith("\"") && text.endsWith("\"") && text.length() > 2) {
       return text.substring(1, text.length() - 1);
@@ -193,19 +210,6 @@ public class JavaPisLocator implements Locator {
     final String s1 = splited[0];
     String s = s1.replaceFirst("^\\s*%\\S+","");
     return StringUtils.substringBefore(s, "%");
-  }
-
-  public static Optional<PsiElement> extractParent(PsiElement psiElement) {
-    final PsiElement parent = psiElement.getParent();
-    if (parent != null) {
-      if (parent instanceof PsiMethodImpl || parent instanceof PsiClassImpl) {
-        return Optional.of(parent);
-      } else {
-        return extractParent(parent);
-      }
-    } else {
-      return Optional.absent();
-    }
   }
 
   protected String[] abbreviateLines(String[] lines, int max, int header){
