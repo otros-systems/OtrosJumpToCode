@@ -44,12 +44,14 @@
       </UL>
       <BR/>
       <B>Version 1.6</B></BR>
-      Fix configuration panel
+      Fix configuration panel</BR>
+      <B>Version 1.7</B></BR>
+      Update Idea version
             ]]>
     </change-notes>
 
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
-    <idea-version since-build="123.72"/>
+    <idea-version since-build="15.0.6"/>
 
     <!-- please see http://confluence.jetbrains.net/display/IDEADEV/Plugin+Compatibility+with+IntelliJ+Platform+Products
          on how to target different products -->

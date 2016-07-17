@@ -13,11 +13,13 @@ repositories {
     mavenCentral()
 }
 
-version = '1.6'
+version = '1.7'
 
 intellij {
 
-    version 'IC-143.1184.17'
+    version '15.0.6'
+
+    intellij.updateSinceUntilBuild = false
 
     publish {
         pluginId '7406'
