@@ -62,16 +62,15 @@ public class JumpToCodeServlet extends HttpServlet {
   }
 
   private static String getParameter(HttpServletRequest request, String shortName, String longName) {
+    return getParameter(request, shortName, longName,"");
+  }
+
+  private static String getParameter(HttpServletRequest request, String shortName, String longName, String defaultValue) {
     String value = request.getParameter(longName);
     if (value == null) {
       value = request.getParameter(shortName);
     }
-    return StringUtils.defaultString(value, "");
-  }
-
-  private static String getParameter(HttpServletRequest request, String shortName, String longName, String defaultValue) {
-    String value = getParameter(request, shortName, longName);
-    return (value != null) ? value : defaultValue;
+    return StringUtils.defaultString(value, defaultValue);
   }
 
   public List<Locator> getInternalLocaotrs(){
