@@ -16,8 +16,13 @@
 
 package pl.otros.intellij.jumptocode.logic;
 
+import com.intellij.openapi.extensions.ExtensionPointName;
+import com.intellij.openapi.extensions.Extensions;
 import pl.otros.intellij.jumptocode.Properties;
+import pl.otros.intellij.jumptocode.extension.LocatorProvider;
 import pl.otros.intellij.jumptocode.gui.DonateNotificationProvider;
+import pl.otros.intellij.jumptocode.logic.locator.Locator;
+import pl.otros.intellij.jumptocode.server.JumpToCodeServlet;
 
 import javax.swing.*;
 import java.awt.*;
@@ -25,6 +30,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.URI;
+import java.util.ArrayList;
 
 /**
  */
@@ -38,6 +44,7 @@ public class JumpToCodeConfigurationForm {
   private JTextArea jumpCount;
   private JButton donateWithBitCoinButton;
   private JButton donateWithPaypal;
+  private JTextArea installedLocatorProviders;
 
   public JumpToCodeConfigurationForm() {
     openOtrosLogViewerPageButton.addActionListener(new OpenBrowser("http://code.google.com/p/otroslogviewer/"));
@@ -56,6 +63,19 @@ public class JumpToCodeConfigurationForm {
     enabledCheckBox.setSelected(data.isEnabled());
     hostnameField.setText(data.getHostName());
     jumpCount.setText(String.format("You have performed %d jumps from OtrosLogViewer", Properties.getJumpsCount()));
+    final ExtensionPointName<LocatorProvider> extensionPointName = new ExtensionPointName<LocatorProvider>("pl.otros.intellij.JumpToCode.locatorProvider");
+    final LocatorProvider[] locatorProviders = Extensions.getExtensions(extensionPointName);
+    final ArrayList<Locator> locators = new ArrayList(JumpToCodeServlet.buildInLocators);
+    for (LocatorProvider locatorProvider : locatorProviders) {
+      locators.add(locatorProvider.locator());
+    }
+    StringBuilder sb = new StringBuilder("Installed source code locators:\n");
+    for (Locator locator : locators) {
+      sb.append(" - ")
+          .append(locator.name())
+          .append("\n");
+    }
+    installedLocatorProviders.setText(sb.toString());
   }
 
   public void getData(Config data) {
