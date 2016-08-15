@@ -1,7 +1,7 @@
 <idea-plugin version="2">
     <id>pl.otros.intellij.JumpToCode</id>
     <name>OtrosJumpToCode</name>
-    <version>1.6</version>
+    <version>1.8</version>
     <vendor email="otros.systems+jumpToCode@gmail.com" url="https://github.com/otros-systems/OtrosJumpToCode">Otros Systems
     </vendor>
 
@@ -47,7 +47,12 @@
       Fix configuration panel</BR>
       <B>Version 1.7</B></BR>
       Update Idea version
+        </BR>
+        <B>Version 1.8</B><BR/>
+        Clean dependencies<BR/>
+
             ]]>
+
     </change-notes>
 
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
