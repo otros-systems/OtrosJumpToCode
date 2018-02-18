@@ -33,5 +33,6 @@ dependencies {
     compile 'org.mortbay.jetty:jetty-util:6.1.26'
     compile 'com.google.code.gson:gson:2.8.2'
     testCompile 'junit:junit:4.12'
+    testCompile 'org.assertj:assertj-core:3.9.0'
 }
 

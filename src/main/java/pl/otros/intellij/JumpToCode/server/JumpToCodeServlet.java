@@ -37,7 +37,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -133,11 +132,11 @@ public class JumpToCodeServlet extends HttpServlet {
       }
     } else if (StringUtils.endsWithIgnoreCase("loggersConfig", operation)) {
       final List<LoggerConfigResponse> log = new FileUtils(getLocators()).getLoggersConfig();
-      final PrintWriter writer = response.getWriter();
       response.setContentType("application/json");
       response.setCharacterEncoding("UTF-8");
       final String r = new Gson().toJson(log);
-      writer.println(r);
+      LOGGER.warn("Response: " + r);
+      response.getOutputStream().write(r.getBytes("UTF-8"));
     } else {
       error(response, "Unexpected operation");
     }

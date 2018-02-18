@@ -139,7 +139,7 @@ public class FileUtils {
               if (loggerType == LoggerConfigUtil.LoggerType.Log4j) {
                 list.add(new LoggerConfigResponse(name, loggerType.name(), LoggerConfigUtil.extractLog4jLayoutPatterns(content, fileTypeName)));
               } else if (loggerType == LoggerConfigUtil.LoggerType.Log4j2) {
-                list.add(new LoggerConfigResponse(name, loggerType.name(), LoggerConfigUtil.extractLog4j2LayoutPatterns(content, fileTypeName)));
+                list.add(new LoggerConfigResponse(name, loggerType.name(), LoggerConfigUtil.extractLog4j2LayoutPatterns(content, psiFile.getFileType().getName())));
               } else if (loggerType == LoggerConfigUtil.LoggerType.Logback) {
                 list.add(new LoggerConfigResponse(name, loggerType.name(), LoggerConfigUtil.extractLogbackLayoutPatterns(content)));
               }
