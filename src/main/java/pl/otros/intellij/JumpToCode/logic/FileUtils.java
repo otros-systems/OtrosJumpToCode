@@ -19,11 +19,13 @@ package pl.otros.intellij.jumptocode.logic;
 import com.google.common.io.ByteStreams;
 import com.intellij.ide.highlighter.JavaClassFileType;
 import com.intellij.ide.highlighter.JavaFileType;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
+import com.intellij.openapi.util.Computable;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.JavaPsiFacade;
 import com.intellij.psi.PsiClass;
@@ -37,6 +39,7 @@ import pl.otros.intellij.jumptocode.logic.locator.Locator;
 import pl.otros.intellij.jumptocode.model.JumpLocation;
 import pl.otros.intellij.jumptocode.model.PsiModelLocation;
 import pl.otros.intellij.jumptocode.model.SourceLocation;
+import pl.otros.intellij.jumptocode.server.LoggerConfigResponse;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -56,7 +59,6 @@ public class FileUtils {
   private final List<? extends Locator> locators;
 
   public FileUtils(List<? extends Locator> locators) {
-    this.sourceFileFinder = new SourceFileFinder();
     this.locators = locators;
   }
 
@@ -116,6 +118,41 @@ public class FileUtils {
     return result;
   }
 
+  public List<LoggerConfigResponse> getLoggersConfig() {
+    String pattern = "log.*(xml|properties|yaml|yml|json|js)";
+    final ArrayList<LoggerConfigResponse> result = new ArrayList<>();
+    final Project[] openProjects = ProjectManager.getInstance().getOpenProjects();
+
+    for (Project project : openProjects) {
+      final PsiShortNamesCache cache = PsiShortNamesCache.getInstance(project);
+      final List<LoggerConfigResponse> inProject = ApplicationManager.getApplication().runReadAction((Computable<List<LoggerConfigResponse>>) () -> {
+        final String[] allFileNames = cache.getAllFileNames();
+        final ArrayList<LoggerConfigResponse> list = new ArrayList<>();
+        for (String fileName : allFileNames) {
+          if (fileName.matches(pattern)) {
+            final PsiFile[] filesByName = cache.getFilesByName(fileName);
+            for (PsiFile psiFile : filesByName) {
+              String name = psiFile.getName();
+              final String fileTypeName = psiFile.getFileType().getName();
+              String content = psiFile.getViewProvider().getContents().toString();
+              final LoggerConfigUtil.LoggerType loggerType = LoggerConfigUtil.loggerType(fileName);
+              if (loggerType == LoggerConfigUtil.LoggerType.Log4j) {
+                list.add(new LoggerConfigResponse(name, loggerType.name(), LoggerConfigUtil.extractLog4jLayoutPatterns(content, fileTypeName)));
+              } else if (loggerType == LoggerConfigUtil.LoggerType.Log4j2) {
+                list.add(new LoggerConfigResponse(name, loggerType.name(), LoggerConfigUtil.extractLog4j2LayoutPatterns(content, psiFile.getFileType().getName())));
+              } else if (loggerType == LoggerConfigUtil.LoggerType.Logback) {
+                list.add(new LoggerConfigResponse(name, loggerType.name(), LoggerConfigUtil.extractLogbackLayoutPatterns(content)));
+              }
+            }
+          }
+        }
+        return list;
+      });
+      result.addAll(inProject);
+    }
+
+    return result;
+  }
 
   public String findWholeClass(String clazz) {
     final PsiShortNamesCache instance = PsiShortNamesCache.getInstance(ProjectManager.getInstance().getDefaultProject());
@@ -140,18 +177,14 @@ public class FileUtils {
             final VirtualFile virtualFile = containingFile.getVirtualFile();
             return readVirtualFile(virtualFile);
           } else if (fileType.isBinary()) {
-            final PsiFile paretntContainingFile = p.getParent().getContainingFile();
-            final FileType paretntContainingFileFileType = paretntContainingFile.getFileType();
+            final PsiFile parentContainingFile = p.getParent().getContainingFile();
+            final FileType parentContainingFileFileType = parentContainingFile.getFileType();
 
-            return String.format("Binary file. parent is %s, type is %s :%s ", paretntContainingFile, paretntContainingFileFileType, paretntContainingFileFileType.getDefaultExtension());
+            return String.format("Binary file. parent is %s, type is %s :%s ", parentContainingFile, parentContainingFileFileType, parentContainingFileFileType.getDefaultExtension());
           }
 
         }
       }
-
-      final PsiFile[] filesByName = instance.getFilesByName(clazz);
-      final PsiClass[] classesByName = instance.getClassesByName(clazz, GlobalSearchScope.projectScope(project));
-      final String[] allClassNames = instance.getAllClassNames();
 
     }
     return "";

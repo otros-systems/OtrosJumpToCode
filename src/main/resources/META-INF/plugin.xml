@@ -48,9 +48,11 @@
       <B>Version 1.7</B></BR>
       Update Idea version
         </BR>
-        <B>Version 1.8</B><BR/>
+      <B>Version 1.8</B><BR/>
         Clean dependencies<BR/>
-
+       <B>Version 1.9</B><BR/>
+        Extract loggers pattern layouts from log4 (xml, properties), log4j (xml, yaml, json, properties) and logback (xml)<BR/>
+        Update to Java 8<BR/>
             ]]>
 
     </change-notes>
