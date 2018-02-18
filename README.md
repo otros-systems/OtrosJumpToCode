@@ -4,8 +4,21 @@ OtrosJumpToCode
 
 ![Build status](https://api.travis-ci.org/otros-systems/OtrosJumpToCode.svg)
 
-OtrosJumpToCode is a plugin which can integrate OtrosLogViewer with Intellij. It allows:
+# Overview
+OtrosJumpToCode is a plugin which can integrate OtrosLogViewer with Intellij. It allows OtrosLogViewer to:
  * Force Intellij to open selected class and highlight line where logger was called.
  * Get source with context where logger is called
+ * Get logger patterns used in project
  
+ # Details
+ This plugin exposes HTTP endpoint which allows:
+ * Jump to code in Intellij. To find location in source plugin can use:
+   * file name and line number, for example `MyClass.java:144`
+   * Class and log message. Plugin will try to figure out which Logger invokaction was used using log message.
+ * Get context of code around specied location (file with line number or log message)
+ * Extract loggers pattern layouts from log4 (xml, properties), log4j (xml, yaml, json, properties) and logback (xml)
+ 
+ 
+ 
+ # Notes
 This is a fork of JumpToCode Plugin in Intellij (http://plugins.jetbrains.com/plugin/1894?pr=)
