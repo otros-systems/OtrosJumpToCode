@@ -19,9 +19,7 @@ package pl.otros.intellij.jumptocode.logic;
 import com.google.common.io.ByteStreams;
 import com.intellij.ide.highlighter.JavaClassFileType;
 import com.intellij.ide.highlighter.JavaFileType;
-import com.intellij.ide.plugins.PluginManager;
 import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.fileTypes.FileType;
@@ -54,8 +52,6 @@ import java.util.concurrent.ScheduledExecutorService;
  */
 public class FileUtils {
 
-  public static final Logger LOGGER = PluginManager.getLogger();
-
   public static final ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
 
   private SourceFileFinder sourceFileFinder = new SourceFileFinder();
@@ -63,7 +59,6 @@ public class FileUtils {
   private final List<? extends Locator> locators;
 
   public FileUtils(List<? extends Locator> locators) {
-    this.sourceFileFinder = new SourceFileFinder();
     this.locators = locators;
   }
 
@@ -135,7 +130,6 @@ public class FileUtils {
         final ArrayList<LoggerConfigResponse> list = new ArrayList<>();
         for (String fileName : allFileNames) {
           if (fileName.matches(pattern)) {
-            LOGGER.warn(fileName);
             final PsiFile[] filesByName = cache.getFilesByName(fileName);
             for (PsiFile psiFile : filesByName) {
               String name = psiFile.getName();
