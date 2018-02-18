@@ -2,6 +2,8 @@ OtrosJumpToCode
 ===============
 [![Codacy Badge](https://api.codacy.com/project/badge/grade/f226d72fad8d4a569e77eef237b9c01d)](https://www.codacy.com/app/krzysztof-otrebski/OtrosJumpToCode)
 
+![Build status](https://api.travis-ci.org/otros-systems/otroslogviewer.svg)
+
 OtrosJumpToCode is a plugin which can integrate OtrosLogViewer with Intellij. It allows:
  * Force Intellij to open selected class and highlight line where logger was called.
  * Get source with context where logger is called
