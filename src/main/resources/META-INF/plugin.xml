@@ -1,4 +1,4 @@
-<idea-plugin version="2">
+<idea-plugin>
     <id>pl.otros.intellij.JumpToCode</id>
     <name>OtrosJumpToCode</name>
     <version>1.9</version>
