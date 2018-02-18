@@ -1,7 +1,7 @@
 <idea-plugin version="2">
     <id>pl.otros.intellij.JumpToCode</id>
     <name>OtrosJumpToCode</name>
-    <version>1.8</version>
+    <version>1.9</version>
     <vendor email="otros.systems+jumpToCode@gmail.com" url="https://github.com/otros-systems/OtrosJumpToCode">Otros Systems
     </vendor>
 

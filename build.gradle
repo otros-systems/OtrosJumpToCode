@@ -20,8 +20,8 @@ intellij {
 
     intellij.updateSinceUntilBuild = false
 
-    publish {
-        pluginId '7406'
+    publishPlugin {
+        username 'username'
         username 'Krzysztof'
         def intellijPassword = System.getenv("INTELLIJ_PASSWORD")
         password = intellijPassword ? intellijPassword : ''
