@@ -17,6 +17,7 @@
 package pl.otros.intellij.jumptocode.server;
 
 import com.google.common.base.Joiner;
+import com.google.gson.Gson;
 import com.intellij.ide.plugins.PluginManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.extensions.ExtensionPointName;
@@ -31,12 +32,12 @@ import pl.otros.intellij.jumptocode.logic.locator.LocationInfo;
 import pl.otros.intellij.jumptocode.logic.locator.Locator;
 import pl.otros.intellij.jumptocode.model.JumpLocation;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -54,7 +55,8 @@ public class JumpToCodeServlet extends HttpServlet {
       "jumpByMessage",
       "contentByLine",
       "contentByMessage",
-      "allFile"
+      "allFile",
+      "loggersConfig"
   );
 
   public JumpToCodeServlet(String version) {
@@ -62,7 +64,7 @@ public class JumpToCodeServlet extends HttpServlet {
   }
 
   private static String getParameter(HttpServletRequest request, String shortName, String longName) {
-    return getParameter(request, shortName, longName,"");
+    return getParameter(request, shortName, longName, "");
   }
 
   private static String getParameter(HttpServletRequest request, String shortName, String longName, String defaultValue) {
@@ -73,15 +75,15 @@ public class JumpToCodeServlet extends HttpServlet {
     return StringUtils.defaultString(value, defaultValue);
   }
 
-  public List<Locator> getInternalLocaotrs(){
+  public List<Locator> getInternalLocators() {
     ArrayList<Locator> r = new ArrayList<Locator>();
     r.addAll(buildInLocators);
     return r;
   }
 
-  public  List<Locator> getLocators(){
+  public List<Locator> getLocators() {
     final ArrayList<Locator> locators = new ArrayList<Locator>();
-    locators.addAll(getInternalLocaotrs());
+    locators.addAll(getInternalLocators());
     locators.addAll(getLocatorsFromExtensions());
     return locators;
   }
@@ -96,14 +98,14 @@ public class JumpToCodeServlet extends HttpServlet {
         final Locator locator = locatorProvider.locator();
         LOGGER.info("Adding locator " + locator.getClass().getName());
         r.add(locator);
-      } catch (Throwable e){
-        LOGGER.error("Can't add locator from " + locatorProvider.getClass().getName() + ": " + e.getMessage(),e);
+      } catch (Throwable e) {
+        LOGGER.error("Can't add locator from " + locatorProvider.getClass().getName() + ": " + e.getMessage(), e);
       }
     }
     return r;
   }
 
-  protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+  protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     response.addHeader("ide", "idea");
     response.addHeader("plugin-version", version);
     response.addHeader("plugin-features", pluginFeatures);
@@ -129,6 +131,13 @@ public class JumpToCodeServlet extends HttpServlet {
       } else {
         response.sendError(HttpServletResponse.SC_NOT_FOUND);
       }
+    } else if (StringUtils.endsWithIgnoreCase("loggersConfig", operation)) {
+      final List<LoggerConfigResponse> log = new FileUtils(getLocators()).getLoggersConfig();
+      final PrintWriter writer = response.getWriter();
+      response.setContentType("application/json");
+      response.setCharacterEncoding("UTF-8");
+      final String r = new Gson().toJson(log);
+      writer.println(r);
     } else {
       error(response, "Unexpected operation");
     }

@@ -16,44 +16,55 @@
 
 <html>
 <body>
-<form action='/' method='GET' >
+<form action='/' method='GET'>
 
-  <table border='0'>
-    <tr>
-      <td><label for='operation'>operation:</label></td>
-      <td>
-        <input id='operation' name='o' type='radio' value='jump' checked='checked'/>jump
-        <input name='o' type='radio' value='test' />test
-        <input name='o' type='radio' value='content' />content
-        <input name='o' type='radio' value='all' />All
+    <table border='0'>
+        <tr>
+            <td>Operation</td>
+            <td>
+                <input name='o' type='radio' id="jump" value='jump' checked='checked'/>
+                <label for="jump">jump</label>
+                <br/>
+                <input name='o' type='radio' id="test" value='test'/>
+                <label for="test">test</label>
+                <br/>
+                <input name='o' type='radio' id='content' value='content'/>
+                <label for="content">content</label>
+                <br/>
+                <input name='o' type='radio' id="all" value='all'/>
+                <label for="all">all</label>
+                <br/>
+                <input name='o' type='radio' id="loggersConfig" value='loggersConfig'/>
+                <label for="loggersConfig">Loggers Config</label>
+                <br/>
 
-      </td>
-    </tr>
-    <tr>
-      <td><label for='packageName'>packageName:</label></td>
-      <td><input type='text' name='p' id='packageName' size='80' value='java.lang'/></td>
-    </tr>
-    <tr>
-      <td><label for='className'>className:</label></td>
-      <td><input type='text' name='c' id='className' size='80' value='java.lang.String'/></td>
-    </tr>
-    <tr>
-      <td><label for='fileName'>fileName</label></td>
-      <td><input type='text' name='f' id='fileName' size='80' value='String.java'/></td>
-    </tr>
-    <tr>
-      <td><label for='lineNumber'>lineNumber</label></td>
-      <td><input type='text' name='l' id='lineNumber' value='120'/></td>
-    </tr>
-    <tr>
-      <td><label for='message'>message</label></td>
-      <td><input type='text' name='m' id='message' value=''/></td>
-    </tr>
-    <tr>
-      <td>&nbsp;</td>
-      <td><input type='submit'/></td>
-    </tr>
-  </table>
+            </td>
+        </tr>
+        <tr>
+            <td><label for='packageName'>packageName:</label></td>
+            <td><input type='text' name='p' id='packageName' size='80' value='java.lang'/></td>
+        </tr>
+        <tr>
+            <td><label for='className'>className:</label></td>
+            <td><input type='text' name='c' id='className' size='80' value='java.lang.String'/></td>
+        </tr>
+        <tr>
+            <td><label for='fileName'>fileName</label></td>
+            <td><input type='text' name='f' id='fileName' size='80' value='String.java'/></td>
+        </tr>
+        <tr>
+            <td><label for='lineNumber'>lineNumber</label></td>
+            <td><input type='text' name='l' id='lineNumber' value='120'/></td>
+        </tr>
+        <tr>
+            <td><label for='message'>message</label></td>
+            <td><input type='text' name='m' id='message' value=''/></td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td><input type='submit'/></td>
+        </tr>
+    </table>
 </form>
 </body>
 </html>

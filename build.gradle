@@ -1,23 +1,22 @@
 plugins {
-    id "org.jetbrains.intellij" version "0.1.10"
+    id "org.jetbrains.intellij" version "0.2.18"
 }
 
 apply plugin: 'org.jetbrains.intellij'
 apply plugin: 'java'
 apply plugin: 'idea'
 
-targetCompatibility = 1.6
-sourceCompatibility = 1.6
+targetCompatibility = 1.8
+sourceCompatibility = 1.8
 
 repositories {
     mavenCentral()
 }
 
-version = '1.8'
+version = '1.9'
 
 intellij {
-
-    version '15.0.6'
+    version 'IC-2016.1'
 
     intellij.updateSinceUntilBuild = false
 
@@ -32,7 +31,7 @@ intellij {
 dependencies {
     compile 'org.mortbay.jetty:jetty:6.1.26'
     compile 'org.mortbay.jetty:jetty-util:6.1.26'
-
+    compile 'com.google.code.gson:gson:2.8.2'
     testCompile 'junit:junit:4.12'
 }
 
