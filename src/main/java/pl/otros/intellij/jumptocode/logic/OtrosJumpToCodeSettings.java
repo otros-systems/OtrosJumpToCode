@@ -12,7 +12,8 @@ import pl.otros.intellij.jumptocode.server.HttpServer;
 
 import javax.swing.*;
 
-@State(name = "OtrosJumpToCodeSettings", storages = {@Storage(file = StoragePathMacros.APP_CONFIG + "/OtrosJumpToCode.cfg")})
+
+@State(name = "OtrosJumpToCodeSettings",storages = @Storage("OtrosJumpToCode.cfg"))
 public class OtrosJumpToCodeSettings implements PersistentStateComponent<Config>, Configurable {
 
   private static final com.intellij.openapi.diagnostic.Logger LOGGER = PluginManager.getLogger();
@@ -62,7 +63,7 @@ public class OtrosJumpToCodeSettings implements PersistentStateComponent<Config>
     return form != null && form.isModified(this.config);
   }
 
-  public void apply() throws ConfigurationException {
+  public void apply() {
     if (form != null) {
       LOGGER.info("Applying configuration");
       form.getData(config);
