@@ -1,10 +1,12 @@
 package pl.otros.intellij.jumptocode.logic;
 
+import com.intellij.openapi.application.Result;
+import com.intellij.openapi.application.WriteAction;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.markup.RangeHighlighter;
-import pl.otros.intellij.jumptocode.gui.SwingUtils;
+import org.jetbrains.annotations.NotNull;
 
-class RemoveHighLighter implements Runnable {
+class RemoveHighLighter extends WriteAction<Void> implements Runnable {
   private Editor editor;
   private RangeHighlighter highlighter;
 
@@ -13,11 +15,13 @@ class RemoveHighLighter implements Runnable {
     this.highlighter = highlighter;
   }
 
+  @Override
+  protected void run(@NotNull Result<Void> result) throws Throwable {
+      editor.getMarkupModel().removeHighlighter(highlighter);
+  }
+
+  @Override
   public void run() {
-    SwingUtils.invokeSwing(new Runnable() {
-      public void run() {
-        editor.getMarkupModel().removeHighlighter(highlighter);
-      }
-    }, false);
+    this.execute();
   }
 }
