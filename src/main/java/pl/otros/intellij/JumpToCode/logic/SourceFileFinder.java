@@ -1,13 +1,13 @@
 package pl.otros.intellij.jumptocode.logic;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.roots.PackageIndex;
 import com.intellij.openapi.vfs.VirtualFile;
 import pl.otros.intellij.jumptocode.model.SourceLocation;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class SourceFileFinder {
   public List<SourceFile> findSourceFiles(SourceLocation location) {

@@ -16,13 +16,6 @@
 
 package pl.otros.intellij.jumptocode.logic;
 
-import com.intellij.openapi.extensions.Extensions;
-import pl.otros.intellij.jumptocode.Properties;
-import pl.otros.intellij.jumptocode.extension.LocatorProvider;
-import pl.otros.intellij.jumptocode.gui.DonateNotificationProvider;
-import pl.otros.intellij.jumptocode.logic.locator.Locator;
-import pl.otros.intellij.jumptocode.server.JumpToCodeServlet;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -33,6 +26,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import com.intellij.openapi.extensions.Extensions;
+import pl.otros.intellij.jumptocode.Properties;
+import pl.otros.intellij.jumptocode.extension.LocatorProvider;
+import pl.otros.intellij.jumptocode.gui.DonateNotificationProvider;
+import pl.otros.intellij.jumptocode.logic.locator.Locator;
+import pl.otros.intellij.jumptocode.server.JumpToCodeServlet;
 
 /**
  */

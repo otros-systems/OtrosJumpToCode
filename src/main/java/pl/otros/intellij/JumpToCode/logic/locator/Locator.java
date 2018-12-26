@@ -1,8 +1,8 @@
 package pl.otros.intellij.jumptocode.logic.locator;
 
-import pl.otros.intellij.jumptocode.model.JumpLocation;
-
 import java.util.List;
+
+import pl.otros.intellij.jumptocode.model.JumpLocation;
 
 public interface Locator {
 
