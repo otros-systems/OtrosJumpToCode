@@ -1,8 +1,8 @@
 package pl.otros.intellij.jumptocode.logic.locator;
 
-import com.google.common.base.Optional;
-
 import javax.servlet.http.HttpServletRequest;
+
+import com.google.common.base.Optional;
 
 public class LocationInfo {
 

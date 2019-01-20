@@ -24,9 +24,9 @@
 
 package pl.otros.intellij.jumptocode;
 
-import com.intellij.ide.util.PropertiesComponent;
-
 import java.util.Random;
+
+import com.intellij.ide.util.PropertiesComponent;
 
 public class Properties {
 

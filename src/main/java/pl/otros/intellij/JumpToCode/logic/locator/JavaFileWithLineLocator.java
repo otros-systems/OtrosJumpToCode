@@ -1,13 +1,5 @@
 package pl.otros.intellij.jumptocode.logic.locator;
 
-import com.google.common.base.Optional;
-import com.intellij.ide.plugins.PluginManager;
-import com.intellij.openapi.fileEditor.OpenFileDescriptor;
-import pl.otros.intellij.jumptocode.IOUtils;
-import pl.otros.intellij.jumptocode.logic.SourceFile;
-import pl.otros.intellij.jumptocode.logic.SourceFileFinder;
-import pl.otros.intellij.jumptocode.model.SourceLocation;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,6 +7,14 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import com.google.common.base.Optional;
+import com.intellij.ide.plugins.PluginManager;
+import com.intellij.openapi.fileEditor.OpenFileDescriptor;
+import pl.otros.intellij.jumptocode.IOUtils;
+import pl.otros.intellij.jumptocode.logic.SourceFile;
+import pl.otros.intellij.jumptocode.logic.SourceFileFinder;
+import pl.otros.intellij.jumptocode.model.SourceLocation;
 
 public class JavaFileWithLineLocator implements Locator {
 

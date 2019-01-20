@@ -16,14 +16,6 @@
 
 package pl.otros.intellij.jumptocode.logic;
 
-import com.intellij.openapi.extensions.ExtensionPointName;
-import com.intellij.openapi.extensions.Extensions;
-import pl.otros.intellij.jumptocode.Properties;
-import pl.otros.intellij.jumptocode.extension.LocatorProvider;
-import pl.otros.intellij.jumptocode.gui.DonateNotificationProvider;
-import pl.otros.intellij.jumptocode.logic.locator.Locator;
-import pl.otros.intellij.jumptocode.server.JumpToCodeServlet;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -31,6 +23,16 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import com.intellij.openapi.extensions.Extensions;
+import pl.otros.intellij.jumptocode.Properties;
+import pl.otros.intellij.jumptocode.extension.LocatorProvider;
+import pl.otros.intellij.jumptocode.gui.DonateNotificationProvider;
+import pl.otros.intellij.jumptocode.logic.locator.Locator;
+import pl.otros.intellij.jumptocode.server.JumpToCodeServlet;
 
 /**
  */
@@ -63,9 +65,14 @@ public class JumpToCodeConfigurationForm {
     enabledCheckBox.setSelected(data.isEnabled());
     hostnameField.setText(data.getHostName());
     jumpCount.setText(String.format("You have performed %d jumps from OtrosLogViewer", Properties.getJumpsCount()));
-    final ExtensionPointName<LocatorProvider> extensionPointName = new ExtensionPointName<LocatorProvider>("pl.otros.intellij.JumpToCode.locatorProvider");
-    final LocatorProvider[] locatorProviders = Extensions.getExtensions(extensionPointName);
-    final ArrayList<Locator> locators = new ArrayList(JumpToCodeServlet.buildInLocators);
+
+    List<LocatorProvider> locatorProviders = Arrays
+              .asList(Extensions.getExtensions("pl.otros.intellij.JumpToCode.locatorProvider"))
+              .stream()
+              .filter(o -> o instanceof LocatorProvider)
+              .map(o -> (LocatorProvider) o)
+              .collect(Collectors.toList());
+    final List<Locator> locators = new ArrayList<>(JumpToCodeServlet.buildInLocators);
     for (LocatorProvider locatorProvider : locatorProviders) {
       locators.add(locatorProvider.locator());
     }

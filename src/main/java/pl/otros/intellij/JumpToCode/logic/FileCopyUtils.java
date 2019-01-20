@@ -16,11 +16,11 @@
 
 package pl.otros.intellij.jumptocode.logic;
 
-import pl.otros.intellij.jumptocode.IOUtils;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+
+import pl.otros.intellij.jumptocode.IOUtils;
 
 /**
  * copied from spring-framework

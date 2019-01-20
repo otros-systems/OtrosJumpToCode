@@ -16,7 +16,7 @@ repositories {
 version = '1.9'
 
 intellij {
-    version 'IC-2016.1'
+    version 'IC-2018.1'
 
     intellij.updateSinceUntilBuild = false
 

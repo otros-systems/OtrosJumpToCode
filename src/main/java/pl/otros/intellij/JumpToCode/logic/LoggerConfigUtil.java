@@ -1,5 +1,19 @@
 package pl.otros.intellij.jumptocode.logic;
 
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Properties;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -8,14 +22,6 @@ import com.intellij.ide.highlighter.XmlFileType;
 import com.intellij.ide.plugins.PluginManager;
 import com.intellij.json.JsonFileType;
 import com.intellij.openapi.diagnostic.Logger;
-
-import java.io.IOException;
-import java.io.StringReader;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class LoggerConfigUtil {
 

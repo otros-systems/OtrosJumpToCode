@@ -16,6 +16,15 @@
 
 package pl.otros.intellij.jumptocode.server;
 
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import com.google.common.base.Joiner;
 import com.google.gson.Gson;
 import com.intellij.ide.plugins.PluginManager;
@@ -31,15 +40,6 @@ import pl.otros.intellij.jumptocode.logic.locator.JavaPisLocator;
 import pl.otros.intellij.jumptocode.logic.locator.LocationInfo;
 import pl.otros.intellij.jumptocode.logic.locator.Locator;
 import pl.otros.intellij.jumptocode.model.JumpLocation;
-
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  */
