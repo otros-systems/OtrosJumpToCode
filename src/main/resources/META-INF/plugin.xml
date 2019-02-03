@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>pl.otros.intellij.JumpToCode</id>
     <name>OtrosJumpToCode</name>
-    <version>1.9</version>
+    <version>1.10</version>
     <vendor email="otros.systems+jumpToCode@gmail.com" url="https://github.com/otros-systems/OtrosJumpToCode">Otros Systems
     </vendor>
 
@@ -12,47 +12,73 @@
       ]]></description>
 
     <change-notes><![CDATA[
-      <B>Version 1.0</B><BR/>
-      Get JumpToCode sources and repackage<BR/>
-      Add operation to get content<BR/>
-      <BR/>
-      <B>Version 1.1</B><BR/>
-      Compiled with Java 1.6 (MacOS :))<BR/>
-      Changed selection color from yellow to "Search result"</BR>
-      <BR/>
-      <B>Version 1.2</B><BR/>
-      Improve threading </BR>
-      Compatibility with IntellijJ 14 </BR>
-      <BR>
-      <B>Version 1.3</B><BR/>
-      Counting jumps count<BR/>
-      <BR>
-      <B>Version 1.4</B><BR/>
-      Jump to code or get content based on logger and log message. Supported jumps:<BR/>
-      <UL>
-        <LI>Logger.info("MessageString")</LI>
-        <LI>Logger.info("MessageString" + args)</LI>
-        <LI>Logger.info("MessageString", args)</LI>
-      </UL>
-      <BR/>
-      <B>Version 1.5</B><BR/>
-      Jump to code or get content based on logger and log message. Supported jumps:<BR/>
-      <UL>
-        <LI>LOGGER.trace("message with arg {}", arg);</LI>
-        <LI>LOGGER.trace(String.format("Message with %d and %d.",arg1, arg2));</LI>
-        <LI>LOGGER.warn("message with arg \"escaped\"");</LI>
-      </UL>
-      <BR/>
-      <B>Version 1.6</B></BR>
-      Fix configuration panel</BR>
-      <B>Version 1.7</B></BR>
-      Update Idea version
-        </BR>
-      <B>Version 1.8</B><BR/>
-        Clean dependencies<BR/>
-       <B>Version 1.9</B><BR/>
-        Extract loggers pattern layouts from log4 (xml, properties), log4j (xml, yaml, json, properties) and logback (xml)<BR/>
-        Update to Java 8<BR/>
+      <B>Version 1.0</B>
+<BR/>
+        Get JumpToCode sources and repackage
+<BR/>
+        Add operation to get content
+<BR/>
+<BR/>
+<B>Version 1.1</B>
+<BR/>
+        Compiled with Java 1.6 (MacOS :))
+<BR/>
+        Changed selection color from yellow to "Search result"
+<BR/>
+<BR/>
+<B>Version 1.2</B>
+<BR/>
+        Improve threading
+<BR/>
+        Compatibility with IntellijJ 14
+<BR/>
+<B>Version 1.3</B>
+<BR/>
+        Counting jumps count
+<BR/>
+
+<B>Version 1.4</B>
+<BR/>
+        Jump to code or get content based on logger and log message. Supported jumps:
+<BR/>
+<UL>
+<LI>Logger.info("MessageString")</LI>
+<LI>Logger.info("MessageString" + args)</LI>
+<LI>Logger.info("MessageString", args)</LI>
+</UL>
+<BR/>
+<B>Version 1.5</B>
+<BR/>
+        Jump to code or get content based on logger and log message. Supported jumps:
+<BR/>
+<UL>
+<LI>LOGGER.trace("message with arg {}", arg);</LI>
+<LI>LOGGER.trace(String.format("Message with %d and %d.",arg1, arg2));</LI>
+<LI>LOGGER.warn("message with arg \"escaped\"");</LI>
+</UL>
+<BR/>
+<B>Version 1.6</B>
+<BR/>
+        Fix configuration panel
+<BR/>
+<B>Version 1.7</B>
+<BR/>
+        Update Idea version
+<BR/>
+<B>Version 1.8</B>
+<BR/>
+        Clean dependencies
+<BR/>
+<B>Version 1.9</B>
+<BR/>
+        Extract loggers pattern layouts from log4 (xml, properties), log4j (xml, yaml, json, properties) and logback (xml)
+<BR/>
+        Update to Java 8
+<BR/>
+<B>Version 1.10</B>
+<BR/>
+        Fix threading issues #8
+<BR/>
             ]]>
 
     </change-notes>
